@@ -1,21 +1,41 @@
 package ru.alex.mscalc.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.alex.mscalc.repository.ClientRepository;
+import ru.alex.mscalc.exception.InvalidPassportDataException;
+import ru.alex.mscalc.exception.OldAgeException;
+import ru.alex.mscalc.exception.YoungAgeException;
+import ru.alex.mscalc.web.dto.ScoringDataDto;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Service
-@RequiredArgsConstructor
 public class ClientService {
 
-    private final ClientRepository clientRepository;
+    @Value("${app.min-age}")
+    private Integer minAge;
+    @Value("${app.max-age}")
+    private Integer maxAge;
 
-    public boolean findClient(String email) {
-        return clientRepository.findClientOnEmail(email);
+    public void validateData(ScoringDataDto scoringDataDto) {
+        if (scoringDataDto.getPassportIssueDate().isAfter(LocalDate.now())) {
+            throw new InvalidPassportDataException("Sorry, your passport is not valid");
+        }
+
+        if (scoringDataDto.getPassportIssueDate().isAfter(LocalDate.now())) {
+            throw new InvalidPassportDataException("Sorry, your passport is not valid");
+        }
+
+        var yearOfClient = ChronoUnit.YEARS.between(scoringDataDto.getBirthdate(), LocalDate.now());
+        checkAgeIsAcceptable(yearOfClient);
     }
 
-    public void checkOnAge(String email) {
-        clientRepository.findClientOnEmail(email);
-
+    private void checkAgeIsAcceptable(long yearOfClient) {
+        if (yearOfClient < minAge) {
+            throw new YoungAgeException("Sorry, you too young");
+        } else if (yearOfClient > maxAge) {
+            throw new OldAgeException("Sorry, you too old");
+        }
     }
 }

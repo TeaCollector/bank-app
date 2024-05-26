@@ -21,5 +21,6 @@ public class Client {
     private String passportNumber;
     private Gender gender;
     private MaritalStatus maritalStatus;
-
+    private LocalDate passportIssueDate;
+    private String passportIssueBranch;
 }

@@ -29,7 +29,7 @@ public class CalculatorApi {
                 .body(calculatorService.offer(loanStatementRequestDto));
     }
 
-    @PostMapping("cal")
+    @PostMapping("calc")
     public ResponseEntity<CreditDto> scoreData(@RequestBody ScoringDataDto scoringDataDto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(calculatorService.scoreData(scoringDataDto));
