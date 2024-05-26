@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @Builder
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
 public class Client {
 
     private String email;
