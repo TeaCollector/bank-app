@@ -1,7 +1,10 @@
 package ru.alex.mscalc.web.dto;
 
 import lombok.Getter;
+import ru.alex.mscalc.entity.constant.Gender;
+import ru.alex.mscalc.entity.constant.MaritalStatus;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -13,15 +16,13 @@ public class ScoringDataDto {
     private String firstName;
     private String lastName;
     private String middleName;
-    // todo здесь енам
-    private String gender;
+    private Gender gender;
     private LocalDate birthDate;
     private String passportSeries;
     private String passportNumber;
     private LocalDate passportIssueDate;
     private String passportIssueBranch;
-    // todo здесь енам
-    private String maritalStatus;
+    private MaritalStatus maritalStatus;
     private Integer dependentAmount;
     private EmploymentDto employment;
     private String account;

@@ -21,7 +21,7 @@ public class LoanStatementRequestDto {
     @Email
     private String email;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @JsonFormat(pattern = "MM/dd/yyyy")
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private LocalDate birthDate;
     @NotNull
     @Size(min = 4, max = 4)

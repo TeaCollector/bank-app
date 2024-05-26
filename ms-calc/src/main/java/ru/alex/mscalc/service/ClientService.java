@@ -6,11 +6,16 @@ import ru.alex.mscalc.repository.ClientRepository;
 
 @Service
 @RequiredArgsConstructor
-public class SalaryClientService {
+public class ClientService {
 
     private final ClientRepository clientRepository;
 
-    public boolean checking(Client client) {
-        return clientRepository.isSalaryClient(client);
+    public boolean findClient(String email) {
+        return clientRepository.findClientOnEmail(email);
+    }
+
+    public void checkOnAge(String email) {
+        clientRepository.findClientOnEmail(email);
+
     }
 }
