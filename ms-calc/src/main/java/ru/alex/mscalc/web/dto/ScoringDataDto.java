@@ -1,11 +1,15 @@
 package ru.alex.mscalc.web.dto;
 
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+import ru.alex.mscalc.entity.constant.Gender;
+import ru.alex.mscalc.entity.constant.MaritalStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
+@Data
 public class ScoringDataDto {
 
     private BigDecimal amount;
@@ -13,15 +17,17 @@ public class ScoringDataDto {
     private String firstName;
     private String lastName;
     private String middleName;
-    // todo здесь енам
-    private String gender;
-    private LocalDate birthDate;
+    private Gender gender;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthdate;
     private String passportSeries;
     private String passportNumber;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate passportIssueDate;
     private String passportIssueBranch;
-    // todo здесь енам
-    private String maritalStatus;
+    private MaritalStatus maritalStatus;
     private Integer dependentAmount;
     private EmploymentDto employment;
     private String account;

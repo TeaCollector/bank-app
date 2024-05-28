@@ -1,15 +1,15 @@
 package ru.alex.mscalc.web.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+
+@Data
 @AllArgsConstructor
+@Builder
+@NoArgsConstructor
 public class PaymentScheduleElementDto {
 
     private Integer number;
