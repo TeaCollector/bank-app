@@ -65,7 +65,7 @@ public class CalculatorService {
     public CreditDto scoreData(ScoringDataDto scoringDataDto) {
         var amount = scoringDataDto.getAmount();
         clientService.validateData(scoringDataDto);
-        var rate = employmentService.calculateRateOnEmployment(scoringDataDto.getEmployment(), amount, mainRate);
+        var rate = employmentService.calculateRateByEmployment(scoringDataDto.getEmployment(), amount, mainRate);
         var term = scoringDataDto.getTerm();
 
         var yearOfClient = ChronoUnit.YEARS.between(scoringDataDto.getBirthdate(), LocalDate.now());
@@ -161,7 +161,7 @@ public class CalculatorService {
         var monthlyRateInTermPow = monthlyRate.add(BigDecimal.valueOf(1)).pow(term);
         var monthlyPayment = monthlyRate.multiply(monthlyRateInTermPow)
                 .divide(monthlyRateInTermPow.subtract(BigDecimal.valueOf(1)), MathContext.DECIMAL32);
-        return monthlyPayment.multiply(totalAmount).setScale(4, RoundingMode.HALF_UP);
+        return monthlyPayment.multiply(totalAmount).setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal calculateInsurance(BigDecimal amount, Integer term) {

@@ -12,20 +12,19 @@ public class LoggingAspect {
 
     @Before(value = "loggingExecutionAllMethod()")
     public void logBeforeExecuting(JoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
-        log.info("Start executing: {}()", methodName);
+        log.info("Execute: {} with arguments: {}", joinPoint.getSignature().toShortString(), joinPoint.getArgs());
     }
 
 
     @AfterThrowing(pointcut = "logException()", throwing = "exception")
     public void logException(JoinPoint joinPoint, Throwable exception) {
         String methodName = joinPoint.getSignature().getName();
-        log.error("{}() - {}", methodName, exception.getMessage());
+        log.error("While executing method: {} throw exception: {}", joinPoint.getSignature().toShortString(), exception.getMessage());
     }
 
     @AfterReturning(pointcut = "controllerMethodLogging()")
     public void logReturningResult(JoinPoint joinPoint) {
-        log.info("Returning result: {}", joinPoint.getArgs());
+        log.info("Method: {} return result: {}", joinPoint.getSignature().toShortString(), joinPoint.getArgs());
     }
 
 

@@ -35,7 +35,7 @@ public class ControllerAdvice {
             TotalWorkExperienceException.class,
             UnemployedException.class,
             YoungAgeException.class,
-            InvalidPassportDataException.class})
+            InvalidPassportIssuesException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public MessageError badRequest(final MethodArgumentNotValidException e) {
         Map<String, String> errors = e.getBindingResult()

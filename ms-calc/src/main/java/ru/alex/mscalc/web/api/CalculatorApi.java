@@ -30,7 +30,7 @@ public class CalculatorApi {
     }
 
     @PostMapping("calc")
-    public ResponseEntity<CreditDto> scoreData(@RequestBody ScoringDataDto scoringDataDto) {
+    public ResponseEntity<CreditDto> scoreData(@Valid @RequestBody ScoringDataDto scoringDataDto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(calculatorService.scoreData(scoringDataDto));
     }

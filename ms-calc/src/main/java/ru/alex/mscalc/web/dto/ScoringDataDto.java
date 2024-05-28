@@ -1,19 +1,19 @@
 package ru.alex.mscalc.web.dto;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.alex.mscalc.entity.constant.Gender;
 import ru.alex.mscalc.entity.constant.MaritalStatus;
 import ru.alex.mscalc.util.validation.annotation.IsLatin;
 
-import javax.validation.constraints.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
-@Getter
-@ToString
+@Data
+@Builder
 public class ScoringDataDto {
 
     @NotNull

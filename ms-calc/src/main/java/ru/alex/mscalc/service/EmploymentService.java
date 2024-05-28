@@ -14,9 +14,9 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class EmploymentService {
 
-    private static final Integer SALARY_MIN = 25;
+    private static final Integer SALARY_MIN = 9;
 
-    public BigDecimal calculateRateOnEmployment(EmploymentDto employmentDto, BigDecimal amount, BigDecimal mainRate) {
+    public BigDecimal calculateRateByEmployment(EmploymentDto employmentDto, BigDecimal amount, BigDecimal mainRate) {
         var rate = mainRate;
         switch (employmentDto.getEmploymentStatus()) {
             case WORKER -> rate = rate.add(BigDecimal.valueOf(1.00d));
@@ -42,7 +42,7 @@ public class EmploymentService {
         }
 
         if (amount.doubleValue() > employmentDto.getSalary().multiply(BigDecimal.valueOf(SALARY_MIN)).doubleValue()) {
-            throw new TooLittleSalaryException("Sorry, you have to little salary for this amount =)");
+            throw new TooLittleSalaryException("Sorry, you have to little salary for this amount");
         }
         return rate;
     }
