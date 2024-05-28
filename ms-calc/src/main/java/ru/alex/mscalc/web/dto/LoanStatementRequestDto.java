@@ -1,17 +1,20 @@
 package ru.alex.mscalc.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.alex.mscalc.util.validation.Adult;
-import ru.alex.mscalc.util.validation.IfPresent;
-import ru.alex.mscalc.util.validation.IsLatin;
+import ru.alex.mscalc.util.validation.annotation.Adult;
+import ru.alex.mscalc.util.validation.annotation.IsLatin;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
+@Data
+@Builder
 public class LoanStatementRequestDto {
 
     @NotNull
@@ -28,8 +31,7 @@ public class LoanStatementRequestDto {
     @IsLatin
     private String firstName;
 
-    @IsLatin
-    @IfPresent
+    @IsLatin(message = "Last name must be only latin")
     private String middleName;
 
     @NotBlank
@@ -37,7 +39,7 @@ public class LoanStatementRequestDto {
     @IsLatin
     private String lastName;
 
-    @Email
+    @Pattern(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     @NotBlank(message = "Email can't be empty")
     private String email;
 

@@ -1,17 +1,19 @@
-package ru.alex.mscalc.util.validation;
+package ru.alex.mscalc.util.validation.annotation;
+
+import ru.alex.mscalc.util.validation.AdultValidator;
 
 import java.lang.annotation.*;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
 
-@Constraint(validatedBy = LatinValidator.class)
+@Constraint(validatedBy = AdultValidator.class)
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface IsLatin {
+public @interface Adult {
 
-    String message() default "Your first/middle/last name must be only latin";
+    String message() default "Your age is less than 18 years old";
 
     Class<?>[] groups() default {};
 

@@ -21,7 +21,6 @@ public class EmploymentService {
         switch (employmentDto.getEmploymentStatus()) {
             case WORKER -> rate = rate.add(BigDecimal.valueOf(1.00d));
             case EMPLOYEE -> rate = rate.add(BigDecimal.valueOf(2.00d));
-            case BUSINESS_OWNER -> rate = rate.add(BigDecimal.valueOf(3.00d));
             case SELF_EMPLOYED -> rate = rate.add(BigDecimal.valueOf(0.50d));
             case UNEMPLOYED -> throw new UnemployedException("Sorry, we can't give loan to unemployed");
         }
