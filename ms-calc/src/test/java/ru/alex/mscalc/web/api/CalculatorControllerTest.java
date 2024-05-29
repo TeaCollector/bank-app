@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest
 @ExtendWith(MockitoExtension.class)
-class CalculatorApiTest {
+class CalculatorControllerTest {
 
     @MockBean
     CalculatorService calculatorService;
