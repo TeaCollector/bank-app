@@ -3,9 +3,8 @@ package ru.alex.mscalc.web.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.alex.mscalc.util.validation.annotation.CanExists;
 import ru.alex.mscalc.util.validation.annotation.Adult;
 import ru.alex.mscalc.util.validation.annotation.IsLatin;
 
@@ -31,7 +30,6 @@ public class LoanStatementRequestDto {
     @IsLatin
     private String firstName;
 
-    @IsLatin(message = "Last name must be only latin")
     private String middleName;
 
     @NotBlank

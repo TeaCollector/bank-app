@@ -14,6 +14,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.validation.Valid;
+
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,8 @@ public class CalculatorService {
 
     @Value("${app.main-rate}")
     private BigDecimal mainRate;
+    @Value("${app.base-insurance}")
+    private BigDecimal baseInsurance;
 
     private BigDecimal totalInterestPayment;
 
@@ -142,6 +146,7 @@ public class CalculatorService {
             totalInterestPayment = totalInterestPayment.add(interestPayment);
 
             paymentsList.add(paymentScheduleElementDto);
+            System.out.println("Total interest payment: " + totalInterestPayment);
         }
         return paymentsList;
     }
@@ -165,10 +170,10 @@ public class CalculatorService {
     }
 
     private BigDecimal calculateInsurance(BigDecimal amount, Integer term) {
-        return amount.multiply(BigDecimal.valueOf(term))
-                .multiply(BigDecimal.valueOf(mainRate.doubleValue() / 100))
-                .setScale(2, RoundingMode.HALF_UP)
-                .subtract(BigDecimal.valueOf(200000));
+        return amount.multiply(BigDecimal.valueOf(mainRate.doubleValue() / 100))
+            .divide(BigDecimal.valueOf(12))
+            .add(baseInsurance)
+            .setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal getMonthlyRate(BigDecimal rate) {
