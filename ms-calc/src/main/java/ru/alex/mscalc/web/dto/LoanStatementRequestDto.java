@@ -1,10 +1,11 @@
 package ru.alex.mscalc.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.alex.mscalc.util.validation.annotation.Adult;
 import ru.alex.mscalc.util.validation.annotation.IsLatin;
@@ -15,6 +16,8 @@ import java.time.LocalDate;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoanStatementRequestDto {
 
     @NotNull
@@ -31,7 +34,7 @@ public class LoanStatementRequestDto {
     @IsLatin
     private String firstName;
 
-    @IsLatin(message = "Last name must be only latin")
+    @IsLatin
     private String middleName;
 
     @NotBlank
@@ -50,10 +53,9 @@ public class LoanStatementRequestDto {
 
     @NotBlank(message = "Passport series can not be null")
     @Pattern(regexp = "^\\d{4}$", message = "Passport series must consist in 4 digits")
-        private String passportSeries;
+    private String passportSeries;
 
     @NotBlank(message = "Passport number can not be null")
     @Pattern(regexp = "^\\d{6}$", message = "Passport number must consist in 6 digits")
     private String passportNumber;
-
 }

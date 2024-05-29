@@ -8,7 +8,7 @@ import javax.validation.Payload;
 
 
 @Constraint(validatedBy = LatinValidator.class)
-@Target({ ElementType.FIELD })
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface IsLatin {

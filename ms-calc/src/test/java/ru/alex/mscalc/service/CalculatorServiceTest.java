@@ -45,7 +45,7 @@ class CalculatorServiceTest {
     @BeforeEach
     void setup() {
         doNothing().when(clientService).validateData(any(ScoringDataDto.class));
-        when(employmentService.calculateRateByEmployment(any(EmploymentDto.class), any(), any()))
+        when(employmentService.calculateRateByEmployment(any(), any(), any()))
                 .thenReturn(BigDecimal.valueOf(15.00));
     }
 
@@ -101,7 +101,7 @@ class CalculatorServiceTest {
     static Stream<Arguments> createValueForCheckMonthlyPayment() {
         return Stream.of(
                 Arguments.of(6, List.of(BigDecimal.valueOf(52210.14), BigDecimal.valueOf(51912.87), BigDecimal.valueOf(63842.91), BigDecimal.valueOf(63477.72))),
-                Arguments.of(9, List.of(BigDecimal.valueOf(35451.18), BigDecimal.valueOf(35164.83), BigDecimal.valueOf(58953.9), BigDecimal.valueOf(58474.96))),
+                Arguments.of(9, List.of(BigDecimal.valueOf(35451.18), BigDecimal.valueOf(35164.83), BigDecimal.valueOf(58953.9).setScale(2), BigDecimal.valueOf(58474.96))),
                 Arguments.of(12, List.of(BigDecimal.valueOf(27077.49), BigDecimal.valueOf(26795.18), BigDecimal.valueOf(56863.23), BigDecimal.valueOf(56266.17))));
 
     }

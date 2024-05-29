@@ -16,6 +16,7 @@ import ru.alex.mscalc.web.dto.ScoringDataDto;
 import javax.validation.Valid;
 import java.util.List;
 
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("calculator")

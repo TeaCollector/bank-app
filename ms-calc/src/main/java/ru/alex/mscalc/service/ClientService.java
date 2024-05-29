@@ -1,5 +1,6 @@
 package ru.alex.mscalc.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.alex.mscalc.exception.InvalidPassportIssuesException;
@@ -10,6 +11,7 @@ import ru.alex.mscalc.web.dto.ScoringDataDto;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+@Slf4j
 @Service
 public class ClientService {
 
@@ -20,6 +22,7 @@ public class ClientService {
 
     public void validateData(ScoringDataDto scoringDataDto) {
         if (scoringDataDto.getPassportIssueDate().isAfter(LocalDate.now())) {
+            log.warn("Sending data by: {} {} passport issued date was expired ", scoringDataDto.getFirstName(), scoringDataDto.getLastName());
             throw new InvalidPassportIssuesException("Sorry, your passport is not valid");
         }
 
@@ -28,10 +31,11 @@ public class ClientService {
     }
 
     private void checkAgeIsAcceptable(long yearOfClient) {
-        System.out.println("MIN AGE: " + minAge);
         if (yearOfClient < minAge) {
+            log.warn("Client too young to take credit");
             throw new YoungAgeException("Sorry, you too young");
         } else if (yearOfClient > maxAge) {
+            log.warn("Client too old to take credit");
             throw new OldAgeException("Sorry, you too old");
         }
     }
