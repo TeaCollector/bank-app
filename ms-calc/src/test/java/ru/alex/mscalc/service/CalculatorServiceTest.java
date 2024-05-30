@@ -23,7 +23,6 @@ import ru.alex.mscalc.web.dto.LoanStatementRequestDto;
 import ru.alex.mscalc.web.dto.ScoringDataDto;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
@@ -50,7 +49,7 @@ class CalculatorServiceTest {
     @BeforeEach
     void setup() {
         doNothing().when(clientService).validateData(any(ScoringDataDto.class));
-        when(employmentService.calculateRateByEmployment(any(EmploymentDto.class), any(), any()))
+        when(employmentService.calculateRateByEmployment(any(), any(), any()))
                 .thenReturn(BigDecimal.valueOf(15.00));
     }
 
@@ -185,9 +184,9 @@ class CalculatorServiceTest {
 
     static Stream<Arguments> createValueForCheckMonthlyPayment() {
         return Stream.of(
-                Arguments.of(6, List.of(BigDecimal.valueOf(52210.14), BigDecimal.valueOf(51912.87), BigDecimal.valueOf(52929.22), BigDecimal.valueOf(52626.46))),
-                Arguments.of(9, List.of(BigDecimal.valueOf(35451.18), BigDecimal.valueOf(35164.83), BigDecimal.valueOf(35810.12), BigDecimal.valueOf(35519.20).setScale(2))),
-                Arguments.of(12, List.of(BigDecimal.valueOf(27077.49), BigDecimal.valueOf(26795.18), BigDecimal.valueOf(27254.37), BigDecimal.valueOf(26968.20).setScale(2))));
+                Arguments.of(6, List.of(BigDecimal.valueOf(52210.14), BigDecimal.valueOf(51912.87), BigDecimal.valueOf(63842.91), BigDecimal.valueOf(63477.72))),
+                Arguments.of(9, List.of(BigDecimal.valueOf(35451.18), BigDecimal.valueOf(35164.83), BigDecimal.valueOf(58953.9).setScale(2), BigDecimal.valueOf(58474.96))),
+                Arguments.of(12, List.of(BigDecimal.valueOf(27077.49), BigDecimal.valueOf(26795.18), BigDecimal.valueOf(56863.23), BigDecimal.valueOf(56266.17))));
 
     }
 

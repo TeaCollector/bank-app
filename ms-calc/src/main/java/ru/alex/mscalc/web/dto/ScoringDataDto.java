@@ -1,19 +1,24 @@
 package ru.alex.mscalc.web.dto;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.alex.mscalc.entity.constant.Gender;
 import ru.alex.mscalc.entity.constant.MaritalStatus;
 import ru.alex.mscalc.util.validation.annotation.IsLatin;
 
+import javax.validation.constraints.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 
 @Data
 @Builder
+@ToString(of = {"amount", "term", "firstName", "lastName",
+        "gender", "birthdate", "maritalStatus", "isSalaryClient",
+        "isInsuranceEnabled", "employment"})
 public class ScoringDataDto {
 
     @NotNull
@@ -27,19 +32,20 @@ public class ScoringDataDto {
 
     @NotBlank
     @Size(min = 2, max = 30)
-    @IsLatin(message = "First name must be only latin")
+    @IsLatin
     private String firstName;
 
     @NotBlank
     @Size(min = 2, max = 30)
-    @IsLatin(message = "Last name must be only latin")
+    @IsLatin
     private String lastName;
 
-    @IsLatin(message = "Last name must be only latin")
+    @IsLatin
     private String middleName;
 
     @NotNull
     private Gender gender;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthdate;
@@ -51,16 +57,20 @@ public class ScoringDataDto {
     @NotBlank(message = "Passport number can not be null")
     @Pattern(regexp = "^\\d{6}$", message = "Passport number must consist in 6 digits")
     private String passportNumber;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate passportIssueDate;
+
     private String passportIssueBranch;
     @NotNull
     private MaritalStatus maritalStatus;
+
     private Integer dependentAmount;
 
     @NotNull
     private EmploymentDto employment;
+
     private String account;
 
     @NotNull
