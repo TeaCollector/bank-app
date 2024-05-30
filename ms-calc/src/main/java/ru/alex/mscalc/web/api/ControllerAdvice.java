@@ -1,5 +1,6 @@
 package ru.alex.mscalc.web.api;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -13,12 +14,14 @@ import ru.alex.mscalc.web.dto.MessageError;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class ControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public MessageError validation(final MethodArgumentNotValidException e) {
+        log.error("Error was captured: {}", e.getMessage());
         Map<String, String> errors = e.getBindingResult()
                 .getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField,
@@ -35,15 +38,10 @@ public class ControllerAdvice {
             TotalWorkExperienceException.class,
             UnemployedException.class,
             YoungAgeException.class,
-            InvalidPassportDataException.class})
+            InvalidPassportIssuesException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public MessageError badRequest(final MethodArgumentNotValidException e) {
-        Map<String, String> errors = e.getBindingResult()
-                .getFieldErrors().stream()
-                .collect(Collectors.toMap(FieldError::getField,
-                        DefaultMessageSourceResolvable::getDefaultMessage,
-                        (existingMessage, newMessage) ->
-                                existingMessage + " " + newMessage));
-        return new MessageError("Validation failed.", errors);
+    public MessageError badRequest(final RuntimeException e) {
+        log.error("Error description: {}", e.getStackTrace());
+        return new MessageError("Sorry, you were refused a loan");
     }
 }

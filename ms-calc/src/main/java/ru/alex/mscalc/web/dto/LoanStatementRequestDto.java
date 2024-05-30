@@ -1,17 +1,23 @@
 package ru.alex.mscalc.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.alex.mscalc.util.validation.Adult;
-import ru.alex.mscalc.util.validation.IfPresent;
-import ru.alex.mscalc.util.validation.IsLatin;
+import ru.alex.mscalc.util.validation.annotation.Adult;
+import ru.alex.mscalc.util.validation.annotation.IsLatin;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoanStatementRequestDto {
 
     @NotNull
@@ -29,7 +35,6 @@ public class LoanStatementRequestDto {
     private String firstName;
 
     @IsLatin
-    @IfPresent
     private String middleName;
 
     @NotBlank
@@ -37,7 +42,7 @@ public class LoanStatementRequestDto {
     @IsLatin
     private String lastName;
 
-    @Email
+    @Pattern(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     @NotBlank(message = "Email can't be empty")
     private String email;
 
@@ -48,10 +53,9 @@ public class LoanStatementRequestDto {
 
     @NotBlank(message = "Passport series can not be null")
     @Pattern(regexp = "^\\d{4}$", message = "Passport series must consist in 4 digits")
-        private String passportSeries;
+    private String passportSeries;
 
     @NotBlank(message = "Passport number can not be null")
     @Pattern(regexp = "^\\d{6}$", message = "Passport number must consist in 6 digits")
     private String passportNumber;
-
 }

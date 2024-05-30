@@ -1,8 +1,9 @@
 package ru.alex.mscalc.entity.constant;
 
 public enum EmploymentStatus {
-    WORKER,
-    EMPLOYEE,
-    SELF_EMPLOYED,
-    UNEMPLOYED
+    WORKER("Работник"),
+    EMPLOYEE("Сотрудник"),
+    SELF_EMPLOYED("Самозанятый"),
+    UNEMPLOYED("Безработный");
+    EmploymentStatus(String description) {}
 }

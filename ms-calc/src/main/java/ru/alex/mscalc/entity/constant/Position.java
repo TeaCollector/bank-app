@@ -1,9 +1,11 @@
 package ru.alex.mscalc.entity.constant;
 
 public enum Position {
-    ADMINISTRATOR,
-    SIMPLE_MANAGER,
-    TOP_MANAGER,
-    CEO,
-    CFO
+    ADMINISTRATOR("Администратор"),
+    SIMPLE_MANAGER("Мэнэджер"),
+    TOP_MANAGER("Топ мэнэджер"),
+    CFO("Финансовый директор"),
+    CEO("Испольнительный директор");
+
+    Position(String description) {}
 }

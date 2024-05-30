@@ -1,5 +1,6 @@
 package ru.alex.mscalc.web.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import ru.alex.mscalc.entity.constant.EmploymentStatus;
 import ru.alex.mscalc.entity.constant.Position;
@@ -7,6 +8,7 @@ import ru.alex.mscalc.entity.constant.Position;
 import java.math.BigDecimal;
 
 @Data
+@Builder
 public class EmploymentDto {
 
     private EmploymentStatus employmentStatus;
