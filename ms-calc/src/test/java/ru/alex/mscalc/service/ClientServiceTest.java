@@ -1,6 +1,7 @@
 package ru.alex.mscalc.service;
 
 import java.time.LocalDate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,43 +24,45 @@ class ClientServiceTest {
     @Autowired
     ClientService clientService;
 
+    private ScoringDataDto scoringDataDto;
+
+    @BeforeEach
+    void setup() {
+        scoringDataDto = getScoringData();
+    }
+
     @Test
     @DisplayName("When data is correct success")
     void success() {
-        var scoringData = getScoringData();
-
-        assertDoesNotThrow(() -> clientService.validateData(scoringData));
+        assertDoesNotThrow(() -> clientService.validateData(scoringDataDto));
     }
 
     @Test
     @DisplayName("When client's passport issues date invalid throw: InvalidPassportIssuesException")
     void throwInvalidPassportIssuesException() {
-        var scoringData = getScoringData();
-        scoringData.setPassportIssueDate(LocalDate.of(2025, 3, 3));
+        scoringDataDto.setPassportIssueDate(LocalDate.of(2025, 3, 3));
 
        assertThrows(InvalidPassportIssuesException.class,
-           () -> clientService.validateData(scoringData));
+           () -> clientService.validateData(scoringDataDto));
 
     }
 
     @Test
     @DisplayName("When client too young throw: YoungAgeException")
     void throwYoungAgeException() {
-        var scoringData = getScoringData();
-        scoringData.setBirthdate(LocalDate.of(2010, 3, 3));
+        scoringDataDto.setBirthdate(LocalDate.of(2010, 3, 3));
 
        assertThrows(YoungAgeException.class,
-           () -> clientService.validateData(scoringData));
+           () -> clientService.validateData(scoringDataDto));
     }
 
     @Test
     @DisplayName("When client too old throw: OldAgeException")
     void throwOldAgeException() {
-        var scoringData = getScoringData();
-        scoringData.setBirthdate(LocalDate.of(1905, 2, 17));
+        scoringDataDto.setBirthdate(LocalDate.of(1905, 2, 17));
 
        assertThrows(OldAgeException.class,
-           () -> clientService.validateData(scoringData));
+           () -> clientService.validateData(scoringDataDto));
     }
 
     private ScoringDataDto getScoringData() {

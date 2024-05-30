@@ -86,8 +86,8 @@ class MsCalcApplicationTests {
                 .content(scoringData))
 
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.monthlyPayment").value(51764.52))
-            .andExpect(jsonPath("$.psk").value(310587.06))
+            .andExpect(jsonPath("$.monthlyPayment").value(51_764.52))
+            .andExpect(jsonPath("$.psk").value(310_587.06))
             .andExpect(jsonPath("$.rate").value(12.00))
             .andExpect(jsonPath("$.paymentSchedule.length()").value(term))
             .andDo(MockMvcResultHandlers.print());

@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class EmploymentService {
 
-    private static final Integer SALARY_MIN = 20;
+    private static final Integer SALARY_MIN = 15;
 
     public BigDecimal calculateRateByEmployment(EmploymentDto employmentDto, BigDecimal amount, BigDecimal mainRate) {
         log.info("Calculate rate by {}, amount: {}, main rate: {}", employmentDto, amount, mainRate);
@@ -30,7 +30,7 @@ public class EmploymentService {
                 throw new UnemployedException("Sorry, we can't give loan to unemployed");
             }
         }
-        log.info("Rate after employment status checking: {}", rate);
+        log.info("Rate after employment status: {}", rate);
 
         switch (employmentDto.getPosition()) {
             case SIMPLE_MANAGER -> rate = rate.add(BigDecimal.valueOf(1.00d));
@@ -54,7 +54,7 @@ public class EmploymentService {
             log.warn("Client salary to little: reject");
             throw new TooLittleSalaryException("Sorry, you have to little salary for this amount");
         }
-        log.info("Final rate calculation after employment position: {}", rate);
+        log.info("Rate after employment position: {}", rate);
         return rate;
     }
 }

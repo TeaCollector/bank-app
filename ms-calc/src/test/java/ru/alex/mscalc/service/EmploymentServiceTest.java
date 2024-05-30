@@ -1,6 +1,7 @@
 package ru.alex.mscalc.service;
 
 import java.math.BigDecimal;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,13 +32,22 @@ class EmploymentServiceTest {
     @Autowired
     EmploymentService employmentService;
 
+    private EmploymentDto employmentDto;
+    private BigDecimal amount;
+
+    @BeforeEach
+    void setup() {
+        employmentDto = getEmploymentDtoTemplate();
+        amount = BigDecimal.valueOf(300_000);
+    }
+
     @Test
     @DisplayName("Correct result on calculate rate by Employment")
     void correctResult() {
-        var amount = BigDecimal.valueOf(300000);
+        var amount = BigDecimal.valueOf(300_000);
         var expected = BigDecimal.valueOf(20.00);
 
-        var actual = employmentService.calculateRateByEmployment(getEmploymentDtoTemplate(), amount, mainRate);
+        var actual = employmentService.calculateRateByEmployment(employmentDto, amount, mainRate);
 
         assertEquals(expected, actual);
     }
@@ -45,9 +55,7 @@ class EmploymentServiceTest {
     @Test
     @DisplayName("When client position is CEO correct result")
     void clientCEO() {
-        var amount = BigDecimal.valueOf(300000);
         var expected = BigDecimal.valueOf(22.50);
-        var employmentDto = getEmploymentDtoTemplate();
         employmentDto.setPosition(Position.CEO);
 
         var actual = employmentService.calculateRateByEmployment(employmentDto, amount, mainRate);
@@ -58,9 +66,7 @@ class EmploymentServiceTest {
     @Test
     @DisplayName("When client position is CFO correct result")
     void clientCFO() {
-        var amount = BigDecimal.valueOf(300000);
         var expected = BigDecimal.valueOf(21.00);
-        var employmentDto = getEmploymentDtoTemplate();
         employmentDto.setPosition(Position.CFO);
 
         var actual = employmentService.calculateRateByEmployment(employmentDto, amount, mainRate);
@@ -71,9 +77,7 @@ class EmploymentServiceTest {
     @Test
     @DisplayName("When client position is ADMINISTRATOR correct result")
     void clientAdministrator() {
-        var amount = BigDecimal.valueOf(300000);
         var expected = BigDecimal.valueOf(18.50);
-        var employmentDto = getEmploymentDtoTemplate();
         employmentDto.setPosition(Position.ADMINISTRATOR);
 
         var actual = employmentService.calculateRateByEmployment(employmentDto, amount, mainRate);
@@ -84,9 +88,7 @@ class EmploymentServiceTest {
     @Test
     @DisplayName("When client position is SIMPLE_MANAGER correct result")
     void clientSimpleManager() {
-        var amount = BigDecimal.valueOf(300000);
         var expected = BigDecimal.valueOf(18.00);
-        var employmentDto = getEmploymentDtoTemplate();
         employmentDto.setPosition(Position.SIMPLE_MANAGER);
 
         var actual = employmentService.calculateRateByEmployment(employmentDto, amount, mainRate);
@@ -97,9 +99,7 @@ class EmploymentServiceTest {
     @Test
     @DisplayName("When client status is WORKER correct result")
     void clientStatusWorker() {
-        var amount = BigDecimal.valueOf(300000);
         var expected = BigDecimal.valueOf(19.00);
-        var employmentDto = getEmploymentDtoTemplate();
         employmentDto.setEmploymentStatus(EmploymentStatus.WORKER);
 
         var actual = employmentService.calculateRateByEmployment(employmentDto, amount, mainRate);
@@ -110,9 +110,7 @@ class EmploymentServiceTest {
     @Test
     @DisplayName("When client status is WORKER correct result")
     void clientStatusSelfEmployed() {
-        var amount = BigDecimal.valueOf(300000);
         var expected = BigDecimal.valueOf(18.50);
-        var employmentDto = getEmploymentDtoTemplate();
         employmentDto.setEmploymentStatus(EmploymentStatus.SELF_EMPLOYED);
 
         var actual = employmentService.calculateRateByEmployment(employmentDto, amount, mainRate);
@@ -123,8 +121,6 @@ class EmploymentServiceTest {
     @Test
     @DisplayName("When status UNEMPLOYED throw: UnemployedException")
     void throwUnemployedException() {
-        var amount = BigDecimal.valueOf(300000);
-        EmploymentDto employmentDto = getEmploymentDtoTemplate();
         employmentDto.setEmploymentStatus(EmploymentStatus.UNEMPLOYED);
 
         assertThrows(UnemployedException.class,
@@ -134,8 +130,6 @@ class EmploymentServiceTest {
     @Test
     @DisplayName("When total working experience less than 18 month throw: TotalWorkExperienceException")
     void throwTotalWorkExperienceException() {
-        var amount = BigDecimal.valueOf(300000);
-        var employmentDto = getEmploymentDtoTemplate();
         employmentDto.setWorkExperienceTotal(17);
 
         assertThrows(TotalWorkExperienceException.class,
@@ -145,8 +139,7 @@ class EmploymentServiceTest {
     @Test
     @DisplayName("When current working experience less than 3 month throw: CurrentWorkExperienceException")
     void throwCurrentWorkExperienceException() {
-        var amount = BigDecimal.valueOf(300000);
-        var employmentDto = getEmploymentDtoTemplate();
+        var amount = BigDecimal.valueOf(300_000);
         employmentDto.setWorkExperienceCurrent(2);
 
         assertThrows(CurrentWorkExperienceException.class,
@@ -154,25 +147,24 @@ class EmploymentServiceTest {
     }
 
     @Test
-    @DisplayName("When current working experience less than 3 month throw: TooLittleSalaryException")
+    @DisplayName("When salary too little throw: TooLittleSalaryException")
     void throwTooLittleSalaryException() {
-        var amount = BigDecimal.valueOf(300000);
-        var employmentDto = getEmploymentDtoTemplate();
-        employmentDto.setSalary(BigDecimal.valueOf(30000));
+        var amount = BigDecimal.valueOf(300_000);
+        employmentDto.setSalary(BigDecimal.valueOf(10_000));
 
         assertThrows(TooLittleSalaryException.class,
             () -> employmentService.calculateRateByEmployment(employmentDto, amount, mainRate));
     }
 
 
-    private static EmploymentDto getEmploymentDtoTemplate() {
+    private EmploymentDto getEmploymentDtoTemplate() {
         return EmploymentDto.builder()
             .employerINN("456234523005")
             .employmentStatus(EmploymentStatus.EMPLOYEE)
             .position(Position.TOP_MANAGER)
             .workExperienceCurrent(20)
             .workExperienceTotal(56)
-            .salary(BigDecimal.valueOf(95000))
+            .salary(BigDecimal.valueOf(95_000))
             .build();
     }
 }

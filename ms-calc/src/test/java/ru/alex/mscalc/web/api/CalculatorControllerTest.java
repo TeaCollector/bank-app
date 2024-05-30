@@ -1,5 +1,7 @@
 package ru.alex.mscalc.web.api;
 
+import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,12 +14,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import ru.alex.mscalc.exception.TooLittleSalaryException;
 import ru.alex.mscalc.service.CalculatorService;
 import ru.alex.mscalc.web.dto.LoanOfferDto;
 import ru.alex.mscalc.web.dto.LoanStatementRequestDto;
-
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -40,7 +40,7 @@ class CalculatorControllerTest {
     void init() {
         when(calculatorService.scoreData(any())).thenReturn(any());
         when(calculatorService.offer(new LoanStatementRequestDto())).thenReturn(List.of(new LoanOfferDto(), new LoanOfferDto(),
-                new LoanOfferDto(), new LoanOfferDto()));
+            new LoanOfferDto(), new LoanOfferDto()));
     }
 
 
@@ -51,11 +51,11 @@ class CalculatorControllerTest {
         var loanStatementRequestDto = String.format(getLoanStatementRequest(), "\"Alexandr\"", "\"sasha@mail.com\"", "\"1992-05-21\"");
 
         mockMvc.perform(post("/calculator/offers")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loanStatementRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loanStatementRequestDto))
 
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(4));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(4));
     }
 
     @Test
@@ -65,11 +65,11 @@ class CalculatorControllerTest {
         var loanStatementRequestDto = String.format(getLoanStatementRequest(), "\"Alexandr\"", "\"sasha@mail.com\"", "\"1992-05-21\"");
 
         mockMvc.perform(post("/calculator/offers")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loanStatementRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loanStatementRequestDto))
 
-                .andExpect(status().isOk())
-                .andExpect((result) -> assertNotEquals(2, result.getResponse().getContentLength()));
+            .andExpect(status().isOk())
+            .andExpect((result) -> assertNotEquals(2, result.getResponse().getContentLength()));
     }
 
     @Test
@@ -79,12 +79,12 @@ class CalculatorControllerTest {
         var loanStatementRequestDto = String.format(getLoanStatementRequest(), "\"Alexandr\"", "\"bala-bala\"", "\"1992-05-21\"");
 
         mockMvc.perform(post("/calculator/offers")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loanStatementRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loanStatementRequestDto))
 
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertInstanceOf(MethodArgumentNotValidException.class,
-                        result.getResolvedException()));
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertInstanceOf(MethodArgumentNotValidException.class,
+                result.getResolvedException()));
     }
 
     @Test
@@ -94,12 +94,12 @@ class CalculatorControllerTest {
         var loanStatementRequestDto = String.format(getLoanStatementRequest(), "\"Alexandr\"", "\"bala-bala\"", "\"1992-05-21\"");
 
         mockMvc.perform(post("/calculator/offers")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loanStatementRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loanStatementRequestDto))
 
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertNotEquals(ClassCastException.class,
-                        result.getResolvedException()));
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertNotEquals(ClassCastException.class,
+                result.getResolvedException()));
     }
 
     @Test
@@ -109,11 +109,11 @@ class CalculatorControllerTest {
         var loanStatementRequestDto = String.format(getLoanStatementRequest(), "\"Alexandr\"", "\"sasha@mail.com\"", "\"1992-05-21\"");
 
         var result = mockMvc.perform(post("/calculator/offers")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loanStatementRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loanStatementRequestDto))
 
-                .andExpect(status().isOk())
-                .andReturn();
+            .andExpect(status().isOk())
+            .andReturn();
 
         assertEquals("application/json", result.getResponse().getContentType());
     }
@@ -125,12 +125,12 @@ class CalculatorControllerTest {
         var loanStatementRequestDto = String.format(getLoanStatementRequest(), "\"Александр\"", "\"sasha@mail.com\"", "\"1992-05-21\"");
 
         mockMvc.perform(post("/calculator/offers")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loanStatementRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loanStatementRequestDto))
 
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors.firstName")
-                        .value("Your first/middle/last name must be only latin"));
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors.firstName")
+                .value("Your first/middle/last name must be only latin"));
     }
 
     @Test
@@ -138,15 +138,15 @@ class CalculatorControllerTest {
     @SneakyThrows
     void checkingValidateMessageInAdultAnnotation() {
         var loanStatementRequestDto = String.format(getLoanStatementRequest(),
-                "\"Alexandr\"", "\"sasha@mail.com\"", "\"2020-01-30\"");
+            "\"Alexandr\"", "\"sasha@mail.com\"", "\"2020-01-30\"");
 
         mockMvc.perform(post("/calculator/offers")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loanStatementRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loanStatementRequestDto))
 
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors.birthdate")
-                        .value("Your age is less than 18 years old"));
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors.birthdate")
+                .value("Your age is less than 18 years old"));
     }
 
     @Test
@@ -156,56 +156,88 @@ class CalculatorControllerTest {
         var scoringDataDto = getScoringDataDto();
 
         mockMvc.perform(post("/calculator/calc")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(scoringDataDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(scoringDataDto))
 
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("Correct exception message when reject ")
+    @SneakyThrows
+    void checkExceptionMessage() {
+        when(calculatorService.scoreData(any())).thenThrow(TooLittleSalaryException.class);
+
+        mockMvc.perform(post("/calculator/calc")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(getScoringDataDto()))
+
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Sorry, you were refused a loan"));
+
+    }
+
+//    @Test
+//    @DisplayName("@IsLatin is receive null value")
+//    @SneakyThrows
+//    void checkingAnnotationIsLatinOnNull() {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        var loanStatementRequestDto = String.format(getLoanStatementRequest(),
+//                "\"Alexandr\"", "\"sasha@mail.com\"", "\"1992-05-21\"");
+//        var loanStatementRequestDtoFromMapper = objectMapper.readValue(loanStatementRequestDto, LoanStatementRequestDto.class);
+//        loanStatementRequestDtoFromMapper.setMiddleName(null);
+//
+//
+//        mockMvc.perform(post("/calculator/offers")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(loanStatementRequestDtoFromMapper)))
+//
+//            .andExpect(status().isOk());
+//    }
 
     private String getLoanStatementRequest() {
         return """
-                {
-                  "amount": 300000.00,
-                  "term": 6,
-                  "firstName": %s,
-                  "lastName": "Sergeev",
-                  "middleName": "Yurievich",
-                  "email": %s,
-                  "birthdate": %s,
-                  "passportSeries": "4456",
-                  "passportNumber": "346894"
-                }
-                """;
+            {
+              "amount": 300000.00,
+              "term": 6,
+              "firstName": %s,
+              "lastName": "Sergeev",
+              "email": %s,
+              "birthdate": %s,
+              "passportSeries": "4456",
+              "passportNumber": "346894"
+            }
+            """;
     }
 
     private String getScoringDataDto() {
         return """
-                {
-                  "amount": 300000.00,
-                  "term": 6,
-                  "firstName": "Aleksandr",
-                  "lastName": "Sergeev",
-                  "middleName": "Yurievich",
-                  "gender": "MALE",
-                  "birthdate": "1990-05-28",
-                  "passportSeries": "3546",
-                  "passportNumber": "409672",
-                  "passportIssueDate": "2020-11-10",
-                  "passportIssueBranch": "String",
-                  "maritalStatus": "MARRIED",
-                  "dependentAmount": 30000.00,
-                  "employment": {
-                        "employmentStatus": "EMPLOYEE",
-                        "employerINN": "396829604",
-                        "salary": 95000.00,
-                        "position": "SIMPLE_MANAGER",
-                        "workExperienceTotal": 50,
-                        "workExperienceCurrent": 10
-                },
-                  "accountNumber": "13456",
-                  "isInsuranceEnabled": true,
-                  "isSalaryClient": false
-                }
-                """;
+            {
+              "amount": 300000.00,
+              "term": 6,
+              "firstName": "Aleksandr",
+              "lastName": "Sergeev",
+              "middleName": "Yurievich",
+              "gender": "MALE",
+              "birthdate": "1990-05-28",
+              "passportSeries": "3546",
+              "passportNumber": "409672",
+              "passportIssueDate": "2020-11-10",
+              "passportIssueBranch": "String",
+              "maritalStatus": "MARRIED",
+              "dependentAmount": 30000.00,
+              "employment": {
+                    "employmentStatus": "EMPLOYEE",
+                    "employerINN": "396829604",
+                    "salary": 95000.00,
+                    "position": "SIMPLE_MANAGER",
+                    "workExperienceTotal": 50,
+                    "workExperienceCurrent": 10
+            },
+              "accountNumber": "13456",
+              "isInsuranceEnabled": true,
+              "isSalaryClient": false
+            }
+            """;
     }
 }
