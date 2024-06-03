@@ -16,7 +16,7 @@ import ru.alex.mscalc.exception.CurrentWorkExperienceException;
 import ru.alex.mscalc.exception.TooLittleSalaryException;
 import ru.alex.mscalc.exception.TotalWorkExperienceException;
 import ru.alex.mscalc.exception.UnemployedException;
-import ru.alex.mscalc.web.dto.EmploymentDto;
+import ru.alex.mscalc.dto.EmploymentDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

@@ -1,6 +1,9 @@
-package ru.alex.mscalc.web.dto;
+package ru.alex.mscalc.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

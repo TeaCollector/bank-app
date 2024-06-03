@@ -5,5 +5,7 @@ public enum EmploymentStatus {
     EMPLOYEE("Сотрудник"),
     SELF_EMPLOYED("Самозанятый"),
     UNEMPLOYED("Безработный");
-    EmploymentStatus(String description) {}
+
+    EmploymentStatus(String description) {
+    }
 }

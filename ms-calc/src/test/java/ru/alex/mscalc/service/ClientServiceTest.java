@@ -12,7 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.alex.mscalc.exception.InvalidPassportIssuesException;
 import ru.alex.mscalc.exception.OldAgeException;
 import ru.alex.mscalc.exception.YoungAgeException;
-import ru.alex.mscalc.web.dto.ScoringDataDto;
+import ru.alex.mscalc.dto.ScoringDataDto;
 import static org.junit.jupiter.api.Assertions.*;
 
 
