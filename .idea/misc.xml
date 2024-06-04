@@ -5,6 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/ms-calc/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-deal/pom.xml" />
       </list>
     </option>
   </component>
