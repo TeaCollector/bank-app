@@ -1,4 +1,4 @@
-package ru.alex.mscalc.web.api;
+package ru.alex.mscalc.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.alex.mscalc.dto.MessageError;
 import ru.alex.mscalc.exception.*;
-import ru.alex.mscalc.web.dto.MessageError;
 
 import java.util.Map;
 import java.util.stream.Collectors;

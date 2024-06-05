@@ -1,4 +1,4 @@
-package ru.alex.mscalc.web.dto;
+package ru.alex.mscalc.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

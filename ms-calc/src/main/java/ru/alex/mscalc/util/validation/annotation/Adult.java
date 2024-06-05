@@ -2,13 +2,13 @@ package ru.alex.mscalc.util.validation.annotation;
 
 import ru.alex.mscalc.util.validation.AdultValidator;
 
-import java.lang.annotation.*;
 import javax.validation.Constraint;
 import javax.validation.Payload;
+import java.lang.annotation.*;
 
 
 @Constraint(validatedBy = AdultValidator.class)
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Adult {

@@ -1,6 +1,6 @@
 package ru.alex.mscalc.util;
 
-import ru.alex.mscalc.web.dto.LoanOfferDto;
+import ru.alex.mscalc.dto.LoanOfferDto;
 
 import java.util.Comparator;
 

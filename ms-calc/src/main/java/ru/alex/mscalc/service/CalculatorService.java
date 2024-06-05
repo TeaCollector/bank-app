@@ -1,5 +1,14 @@
 package ru.alex.mscalc.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import ru.alex.mscalc.dto.*;
+import ru.alex.mscalc.entity.constant.Gender;
+import ru.alex.mscalc.entity.constant.MaritalStatus;
+import ru.alex.mscalc.util.RateComparator;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -7,15 +16,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import ru.alex.mscalc.entity.constant.Gender;
-import ru.alex.mscalc.entity.constant.MaritalStatus;
-import ru.alex.mscalc.util.RateComparator;
-import ru.alex.mscalc.web.dto.*;
 
 
 @Slf4j
@@ -35,22 +37,19 @@ public class CalculatorService {
 
     public List<LoanOfferDto> offer(LoanStatementRequestDto loanStatementRequestDto) {
         log.info("{} {} send request to receive loan offer, amount: {}, term: {}", loanStatementRequestDto.getFirstName(), loanStatementRequestDto.getLastName(),
-            loanStatementRequestDto.getAmount(), loanStatementRequestDto.getTerm());
-        var combination = List.of(
-            true, true,
-            false, false,
-            true, false,
-            false, true);
+                loanStatementRequestDto.getAmount(), loanStatementRequestDto.getTerm());
 
         var loanOfferDtoList = new ArrayList<LoanOfferDto>();
+        var conditionCombination = LoanCondition.conditionCombination;
 
-        for (int i = 0; i < combination.size() / 2; i++) {
-            LoanOfferDto loanOfferDto = createLoanOffer(loanStatementRequestDto, combination.get(i), combination.get(i + 1));
+        for (int i = 0; i < conditionCombination.size(); i++) {
+            var combinationPair = conditionCombination.get(i);
+            var loanOfferDto = createLoanOffer(loanStatementRequestDto, combinationPair.get(0), combinationPair.get(1));
 
             log.info("For rate: {} monthly payment is: {}, insurance enable: {}, salary client: {}, total amount: {}",
-                loanOfferDto.getRate(), loanOfferDto.getMonthlyPayment(),
-                loanOfferDto.getIsInsuranceEnabled(), loanOfferDto.getIsSalaryClient(),
-                loanOfferDto.getTotalAmount());
+                    loanOfferDto.getRate(), loanOfferDto.getMonthlyPayment(),
+                    loanOfferDto.getIsInsuranceEnabled(), loanOfferDto.getIsSalaryClient(),
+                    loanOfferDto.getTotalAmount());
 
             loanOfferDtoList.add(loanOfferDto);
         }
@@ -59,30 +58,6 @@ public class CalculatorService {
         log.info("Rate after sorting: {}", loanOfferDtoList.stream().map(LoanOfferDto::getRate).toList());
 
         return loanOfferDtoList;
-    }
-
-    private LoanOfferDto createLoanOffer(LoanStatementRequestDto loanStatementRequestDto,
-                                         Boolean isSalaryClient,
-                                         Boolean isInsuranceEnabled) {
-        var rate = updateRate(isSalaryClient, isInsuranceEnabled, mainRate);
-        var totalAmount = BigDecimal.ZERO;
-
-        if (isInsuranceEnabled) {
-            totalAmount = loanStatementRequestDto.getAmount().add(calculateInsurance(loanStatementRequestDto.getAmount()));
-        } else {
-            totalAmount = loanStatementRequestDto.getAmount();
-        }
-
-        return LoanOfferDto.builder()
-            .statementId(UUID.randomUUID())
-            .requestAmount(loanStatementRequestDto.getAmount())
-            .term(loanStatementRequestDto.getTerm())
-            .rate(rate)
-            .isSalaryClient(isSalaryClient)
-            .isInsuranceEnabled(isInsuranceEnabled)
-            .totalAmount(totalAmount)
-            .monthlyPayment(calculateMonthlyPayment(loanStatementRequestDto.getTerm(), totalAmount, rate, getMonthlyRate(rate)))
-            .build();
     }
 
     public CreditDto scoreData(ScoringDataDto scoringDataDto) {
@@ -94,9 +69,7 @@ public class CalculatorService {
         var rate = employmentService.calculateRateByEmployment(scoringDataDto.getEmployment(), amount, mainRate);
         var term = scoringDataDto.getTerm();
 
-        rate = updateRate(scoringDataDto.getGender(), scoringDataDto.getBirthdate(), rate);
-        rate = updateRate(scoringDataDto.getMaritalStatus(), rate);
-        rate = updateRate(scoringDataDto.getIsSalaryClient(), scoringDataDto.getIsInsuranceEnabled(), rate);
+        rate = updateRate(scoringDataDto, rate);
 
         if (scoringDataDto.getIsInsuranceEnabled()) {
             amount = amount.add(calculateInsurance(amount));
@@ -105,21 +78,51 @@ public class CalculatorService {
         var monthlyRate = getMonthlyRate(rate);
 
         var creditDto = CreditDto.builder()
-            .isInsuranceEnabled(scoringDataDto.getIsInsuranceEnabled())
-            .isSalaryClient(scoringDataDto.getIsSalaryClient())
-            .term(scoringDataDto.getTerm())
-            .rate(rate)
-            .amount(amount)
-            .monthlyPayment(calculateMonthlyPayment(scoringDataDto.getTerm(), amount, rate, monthlyRate))
-            .paymentSchedule(calculatePaymentSchedule(amount, term, rate, monthlyRate))
-            .psk(amount.add(totalInterestPayment).setScale(2, RoundingMode.HALF_UP))
-            .build();
+                .isInsuranceEnabled(scoringDataDto.getIsInsuranceEnabled())
+                .isSalaryClient(scoringDataDto.getIsSalaryClient())
+                .term(scoringDataDto.getTerm())
+                .rate(rate)
+                .amount(amount)
+                .monthlyPayment(calculateMonthlyPayment(scoringDataDto.getTerm(), amount, rate, monthlyRate))
+                .paymentSchedule(calculatePaymentSchedule(amount, term, rate, monthlyRate))
+                .psk(amount.add(totalInterestPayment).setScale(2, RoundingMode.HALF_UP))
+                .build();
 
         log.info("Credit suggestion after all calculating: {}", creditDto);
         return creditDto;
     }
 
-    private BigDecimal updateRate(MaritalStatus maritalStatus, BigDecimal rate) {
+    private BigDecimal updateRate(ScoringDataDto scoringDataDto, BigDecimal rate) {
+        rate = updateRateByGender(scoringDataDto.getGender(), scoringDataDto.getBirthdate(), rate);
+        rate = updateRateByMaritalStatus(scoringDataDto.getMaritalStatus(), rate);
+        return updateRateBySalaryCLientAndInsurance(scoringDataDto.getIsSalaryClient(), scoringDataDto.getIsInsuranceEnabled(), rate);
+    }
+
+    private LoanOfferDto createLoanOffer(LoanStatementRequestDto loanStatementRequestDto,
+                                         Boolean isSalaryClient,
+                                         Boolean isInsuranceEnabled) {
+        var rate = updateRateBySalaryCLientAndInsurance(isSalaryClient, isInsuranceEnabled, mainRate);
+        var totalAmount = BigDecimal.ZERO;
+
+        if (isInsuranceEnabled) {
+            totalAmount = loanStatementRequestDto.getAmount().add(calculateInsurance(loanStatementRequestDto.getAmount()));
+        } else {
+            totalAmount = loanStatementRequestDto.getAmount();
+        }
+
+        return LoanOfferDto.builder()
+                .statementId(UUID.randomUUID())
+                .requestAmount(loanStatementRequestDto.getAmount())
+                .term(loanStatementRequestDto.getTerm())
+                .rate(rate)
+                .isSalaryClient(isSalaryClient)
+                .isInsuranceEnabled(isInsuranceEnabled)
+                .totalAmount(totalAmount)
+                .monthlyPayment(calculateMonthlyPayment(loanStatementRequestDto.getTerm(), totalAmount, rate, getMonthlyRate(rate)))
+                .build();
+    }
+
+    private BigDecimal updateRateByMaritalStatus(MaritalStatus maritalStatus, BigDecimal rate) {
         log.info("Marital status: {}, rate: {}", maritalStatus, rate);
         switch (maritalStatus) {
             case SINGLE -> rate = rate.add(BigDecimal.valueOf(1.00d));
@@ -130,7 +133,7 @@ public class CalculatorService {
         return rate;
     }
 
-    private BigDecimal updateRate(Gender gender, LocalDate birthdate, BigDecimal rate) {
+    private BigDecimal updateRateByGender(Gender gender, LocalDate birthdate, BigDecimal rate) {
         var yearOfClient = ChronoUnit.YEARS.between(birthdate, LocalDate.now());
         log.info("Client age is: {}, gender: {}, rate: {}", yearOfClient, gender, rate);
         switch (gender) {
@@ -167,13 +170,13 @@ public class CalculatorService {
             amount = amount.subtract(debtPayment);
 
             var paymentScheduleElementDto = PaymentScheduleElementDto.builder()
-                .number(i)
-                .date(LocalDate.now().plusMonths(i))
-                .totalAmount(totalAmount)
-                .interestPayment(interestPayment.setScale(2, RoundingMode.HALF_UP))
-                .debtPayment(debtPayment.setScale(2, RoundingMode.HALF_UP))
-                .remainingDebt(amount.setScale(2, RoundingMode.HALF_UP))
-                .build();
+                    .number(i)
+                    .date(LocalDate.now().plusMonths(i))
+                    .totalAmount(totalAmount)
+                    .interestPayment(interestPayment.setScale(2, RoundingMode.HALF_UP))
+                    .debtPayment(debtPayment.setScale(2, RoundingMode.HALF_UP))
+                    .remainingDebt(amount.setScale(2, RoundingMode.HALF_UP))
+                    .build();
 
             totalInterestPayment = totalInterestPayment.add(interestPayment);
             paymentsScheduleList.add(paymentScheduleElementDto);
@@ -182,7 +185,7 @@ public class CalculatorService {
         return paymentsScheduleList;
     }
 
-    private BigDecimal updateRate(boolean isSalaryClient, boolean isInsuranceAdd, BigDecimal rate) {
+    private BigDecimal updateRateBySalaryCLientAndInsurance(boolean isSalaryClient, boolean isInsuranceAdd, BigDecimal rate) {
         log.info("Client is salary: {}, is insurance enable: {}, rate: {}", isSalaryClient, isInsuranceAdd, rate);
         if (isSalaryClient) {
             rate = rate.subtract(BigDecimal.valueOf(2.00d)).setScale(2, RoundingMode.HALF_UP);
@@ -198,20 +201,29 @@ public class CalculatorService {
         log.info("Calculate monthly payment term: {}, total amount: {}, rate: {}, monthly payment: {}", term, totalAmount, rate, monthlyRate);
         var monthlyRateInTermPow = monthlyRate.add(BigDecimal.valueOf(1)).pow(term);
         var monthlyPayment = monthlyRate.multiply(monthlyRateInTermPow)
-            .divide(monthlyRateInTermPow.subtract(BigDecimal.valueOf(1)), MathContext.DECIMAL32);
+                .divide(monthlyRateInTermPow.subtract(BigDecimal.valueOf(1)), MathContext.DECIMAL32);
 
         return monthlyPayment.multiply(totalAmount).setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal calculateInsurance(BigDecimal amount) {
         return amount.multiply(BigDecimal.valueOf(mainRate.doubleValue() / 100))
-            .divide(BigDecimal.valueOf(12))
-            .add(baseInsurance)
-            .setScale(2, RoundingMode.HALF_UP);
+                .divide(BigDecimal.valueOf(12))
+                .add(baseInsurance)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal getMonthlyRate(BigDecimal rate) {
         log.info("Calculate monthly rate on final rate: {}", rate);
         return BigDecimal.valueOf(rate.doubleValue() / 100 / 12);
+    }
+
+    static class LoanCondition {
+        public static final Map<Integer, List<Boolean>> conditionCombination = Map.of(
+                1, List.of(true, true),
+                2, List.of(false, false),
+                3, List.of(true, false),
+                4, List.of(false, true)
+        );
     }
 }
