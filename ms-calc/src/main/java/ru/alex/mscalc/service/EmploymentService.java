@@ -1,5 +1,6 @@
 package ru.alex.mscalc.service;
 
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,6 @@ import ru.alex.mscalc.exception.TooLittleSalaryException;
 import ru.alex.mscalc.exception.TotalWorkExperienceException;
 import ru.alex.mscalc.exception.UnemployedException;
 
-import java.math.BigDecimal;
 
 @Slf4j
 @Service
