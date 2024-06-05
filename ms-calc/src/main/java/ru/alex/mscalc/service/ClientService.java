@@ -1,15 +1,15 @@
 package ru.alex.mscalc.service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.alex.mscalc.dto.ScoringDataDto;
 import ru.alex.mscalc.exception.InvalidPassportIssuesException;
 import ru.alex.mscalc.exception.OldAgeException;
 import ru.alex.mscalc.exception.YoungAgeException;
-import ru.alex.mscalc.web.dto.ScoringDataDto;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 @Slf4j
 @Service

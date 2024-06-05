@@ -21,9 +21,9 @@ import ru.alex.mscalc.entity.constant.EmploymentStatus;
 import ru.alex.mscalc.entity.constant.Gender;
 import ru.alex.mscalc.entity.constant.MaritalStatus;
 import ru.alex.mscalc.entity.constant.Position;
-import ru.alex.mscalc.web.dto.EmploymentDto;
-import ru.alex.mscalc.web.dto.LoanStatementRequestDto;
-import ru.alex.mscalc.web.dto.ScoringDataDto;
+import ru.alex.mscalc.dto.EmploymentDto;
+import ru.alex.mscalc.dto.LoanStatementRequestDto;
+import ru.alex.mscalc.dto.ScoringDataDto;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
