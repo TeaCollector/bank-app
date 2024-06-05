@@ -2,18 +2,20 @@ package ru.alex.msdeal.entity;
 
 import java.time.Instant;
 import java.util.UUID;
-import jakarta.persistence.*;
+import javax.persistence.*;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import ru.alex.msdeal.entity.constant.ApplicationStatus;
 
 
 @Getter
 @Setter
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "statement", schema = "public")
@@ -31,7 +33,7 @@ public class Statement {
 
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "credit_id")
     private Credit credit;
 
     @Enumerated(EnumType.STRING)
@@ -39,14 +41,14 @@ public class Statement {
 
     private Instant creationDate;
 
-    @JdbcTypeCode(SqlTypes.JSON)
+    @Type(type = "jsonb")
     private AppliedOffer aplliedOffer;
 
     private Instant signDate;
 
     private Integer sesCode;
 
-    @JdbcTypeCode(SqlTypes.JSON)
+    @Type(type = "jsonb")
     private StatusHistory statusHistory;
 
 

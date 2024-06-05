@@ -7,5 +7,6 @@ public enum EmploymentPosition {
     CFO("Финансовый директор"),
     CEO("Испольнительный директор");
 
-    EmploymentPosition(String description) {}
+    EmploymentPosition(String description) {
+    }
 }

@@ -5,5 +5,6 @@ public enum MaritalStatus {
     SINGLE("Разведен"),
     WIDOWED("Вдова");
 
-    MaritalStatus(String description) {}
+    MaritalStatus(String description) {
+    }
 }

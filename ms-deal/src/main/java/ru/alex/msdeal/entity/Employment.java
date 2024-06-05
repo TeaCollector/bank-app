@@ -1,8 +1,8 @@
 package ru.alex.msdeal.entity;
 
 import java.math.BigDecimal;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

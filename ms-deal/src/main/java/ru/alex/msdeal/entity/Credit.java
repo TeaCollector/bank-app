@@ -2,22 +2,20 @@ package ru.alex.msdeal.entity;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import jakarta.persistence.*;
+import javax.persistence.*;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import ru.alex.msdeal.entity.constant.CreditStatus;
 
 
 @Getter
 @Setter
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "credit", schema = "public")
@@ -38,8 +36,7 @@ public class Credit {
 
     private BigDecimal psk;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-
+    @Type(type = "jsonb")
     private PaymentSchedule paymentSchedule;
 
     private Boolean insuranceEnable;

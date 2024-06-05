@@ -2,19 +2,21 @@ package ru.alex.msdeal.entity;
 
 import java.util.Date;
 import java.util.UUID;
-import jakarta.persistence.*;
+import javax.persistence.*;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import ru.alex.msdeal.entity.constant.Gender;
 import ru.alex.msdeal.entity.constant.MaritalStatus;
 
 
 @Getter
 @Setter
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "Client")
@@ -44,15 +46,14 @@ public class Client {
 
     private Integer dependentAmount;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @OneToOne(fetch = FetchType.LAZY)
+    @Type(type = "jsonb")
     @JoinColumn(name = "passport_id")
     private Passport passport;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @OneToOne
+    @Type(type = "jsonb")
     @JoinColumn(name = "employment_id")
     private Employment employment;
+
     private String accountNumber;
 
 }

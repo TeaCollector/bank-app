@@ -1,8 +1,8 @@
 package ru.alex.msdeal.entity;
 
 import java.time.Instant;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import ru.alex.msdeal.entity.constant.ChangeType;
 
 

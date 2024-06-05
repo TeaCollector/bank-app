@@ -12,9 +12,6 @@ public enum ApplicationStatus {
     CREDIT_ISSUED("Кредит выдан");
 
 
-    private String description;
-
     ApplicationStatus(String description) {
-        this.description = description;
     }
 }
