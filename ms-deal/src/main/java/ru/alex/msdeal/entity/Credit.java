@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import ru.alex.msdeal.entity.constant.CreditStatus;
@@ -23,7 +24,12 @@ import ru.alex.msdeal.entity.constant.CreditStatus;
 public class Credit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "credit_id")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
+    )
     private UUID id;
 
     private BigDecimal amount;
@@ -39,7 +45,7 @@ public class Credit {
     @Type(type = "jsonb")
     private PaymentSchedule paymentSchedule;
 
-    private Boolean insuranceEnable;
+    private Boolean insuranceEnabled;
 
     private Boolean salaryClient;
 

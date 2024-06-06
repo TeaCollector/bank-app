@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +36,7 @@ public interface DealApi {
         })
     )
     @PostMapping("statement")
-    ResponseEntity<List<LoanOfferDto>> offer(@RequestBody LoanStatementRequestDto loanStatementRequestDto);
+    ResponseEntity<List<LoanOfferDto>> createOffer(@RequestBody LoanStatementRequestDto loanStatementRequestDto);
 
 
     @Operation(summary = "Choose purpose")
@@ -48,7 +49,7 @@ public interface DealApi {
         })
     )
     @PostMapping("offer/select")
-    ResponseEntity<Void> selectOffer(@RequestBody LoanOfferDto loanOfferDto);
+    ResponseEntity<Void> offerSelect(@RequestBody LoanOfferDto loanOfferDto);
 
     @Operation(summary = "Finish registration and calculate full credit purpose")
     @ApiResponses(value =
@@ -61,5 +62,5 @@ public interface DealApi {
     )
     @PostMapping("calculate/{statementId}")
     ResponseEntity<Void> calculate(@RequestBody FinishRegistrationRequestDto finishRegistrationRequestDto,
-                                   @Parameter(name = "statementId") String statementId);
+                                   @Parameter(name = "statementId") @PathVariable String statementId);
 }

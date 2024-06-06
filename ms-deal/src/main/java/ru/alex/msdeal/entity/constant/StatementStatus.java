@@ -1,6 +1,6 @@
 package ru.alex.msdeal.entity.constant;
 
-public enum ApplicationStatus {
+public enum StatementStatus {
     PREAPPROVAL("Почти подтверждено"),
     APPROVED("Подтверждено"),
     CC_DENIED("Отклонено"),
@@ -12,6 +12,6 @@ public enum ApplicationStatus {
     CREDIT_ISSUED("Кредит выдан");
 
 
-    ApplicationStatus(String description) {
+    StatementStatus(String description) {
     }
 }

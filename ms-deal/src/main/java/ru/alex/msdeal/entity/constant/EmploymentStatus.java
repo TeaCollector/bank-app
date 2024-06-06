@@ -1,8 +1,8 @@
 package ru.alex.msdeal.entity.constant;
 
 public enum EmploymentStatus {
-    WORKER("Работник"),
-    EMPLOYEE("Сотрудник"),
+    BUSINESS_OWNER("Владелец бизнеса"),
+    EMPLOYED("Сотрудник"),
     SELF_EMPLOYED("Самозанятый"),
     UNEMPLOYED("Безработный");
 

@@ -19,14 +19,14 @@ public class DealController implements DealApi {
     private final DealService dealService;
 
     @Override
-    public ResponseEntity<List<LoanOfferDto>> offer(LoanStatementRequestDto loanStatementRequestDto) {
+    public ResponseEntity<List<LoanOfferDto>> createOffer(LoanStatementRequestDto loanStatementRequestDto) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(dealService.offer(loanStatementRequestDto));
     }
 
     @Override
-    public ResponseEntity<Void> selectOffer(LoanOfferDto loanOfferDto) {
+    public ResponseEntity<Void> offerSelect(LoanOfferDto loanOfferDto) {
         dealService.selectOffer(loanOfferDto);
         return ResponseEntity
             .status(HttpStatus.OK)

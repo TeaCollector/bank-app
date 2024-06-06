@@ -2,15 +2,12 @@ package ru.alex.msdeal.dto;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class LoanOfferDto {
 

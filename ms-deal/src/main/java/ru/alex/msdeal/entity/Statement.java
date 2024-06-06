@@ -4,15 +4,13 @@ import java.time.Instant;
 import java.util.UUID;
 import javax.persistence.*;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import ru.alex.msdeal.entity.constant.ApplicationStatus;
+import ru.alex.msdeal.entity.constant.StatementStatus;
 
-
+@Builder
 @Getter
 @Setter
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
@@ -23,8 +21,12 @@ import ru.alex.msdeal.entity.constant.ApplicationStatus;
 public class Statement {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statement_id")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
+    )
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -37,12 +39,12 @@ public class Statement {
     private Credit credit;
 
     @Enumerated(EnumType.STRING)
-    private ApplicationStatus status;
+    private StatementStatus status;
 
     private Instant creationDate;
 
     @Type(type = "jsonb")
-    private AppliedOffer aplliedOffer;
+    private AppliedOffer appliedOffer;
 
     private Instant signDate;
 

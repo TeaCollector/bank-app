@@ -1,6 +1,6 @@
 package ru.alex.msdeal.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 import javax.persistence.*;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import ru.alex.msdeal.entity.constant.Gender;
@@ -24,8 +25,12 @@ import ru.alex.msdeal.entity.constant.MaritalStatus;
 public class Client {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_id")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
+    )
     private UUID id;
 
     private String lastName;
@@ -34,7 +39,8 @@ public class Client {
 
     private String middleName;
 
-    private Date birthDate;
+    @Column(name = "birth_date")
+    private LocalDate birthdate;
 
     private String email;
 
@@ -46,12 +52,13 @@ public class Client {
 
     private Integer dependentAmount;
 
+    @OneToOne(cascade = CascadeType.ALL)
     @Type(type = "jsonb")
     @JoinColumn(name = "passport_id")
     private Passport passport;
 
     @Type(type = "jsonb")
-    @JoinColumn(name = "employment_id")
+    @Column(name = "employment_id")
     private Employment employment;
 
     private String accountNumber;
