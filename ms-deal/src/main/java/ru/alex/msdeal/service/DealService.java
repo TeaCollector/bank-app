@@ -1,24 +1,24 @@
 package ru.alex.msdeal.service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.alex.msdeal.dto.FinishRegistrationRequestDto;
-import ru.alex.msdeal.dto.LoanOfferDto;
-import ru.alex.msdeal.dto.LoanStatementRequestDto;
-import ru.alex.msdeal.dto.ScoringDataDto;
-import ru.alex.msdeal.entity.AppliedOffer;
-import ru.alex.msdeal.entity.Statement;
-import ru.alex.msdeal.entity.StatusHistory;
+import ru.alex.msdeal.dto.*;
+import ru.alex.msdeal.entity.*;
 import ru.alex.msdeal.entity.constant.ChangeType;
+import ru.alex.msdeal.entity.constant.CreditStatus;
 import ru.alex.msdeal.entity.constant.StatementStatus;
 import ru.alex.msdeal.mapper.ClientMapper;
+import ru.alex.msdeal.mapper.CreditMapper;
+import ru.alex.msdeal.mapper.EmploymentMapper;
 import ru.alex.msdeal.mapper.PassportMapper;
 import ru.alex.msdeal.repository.ClientRepository;
+import ru.alex.msdeal.repository.CreditRepository;
 import ru.alex.msdeal.repository.StatementRepository;
 
 
@@ -31,43 +31,121 @@ public class DealService {
     private final CalculatorFeignClient calculatorFeignClient;
     private final ClientRepository clientRepository;
     private final StatementRepository statementRepository;
+    private final CreditRepository creditRepository;
+
+    private final EmploymentMapper employmentMapper;
     private final ClientMapper clientMapper;
     private final PassportMapper passportMapper;
+    private final CreditMapper creditMapper;
 
     public List<LoanOfferDto> offer(LoanStatementRequestDto loanStatementRequestDto) {
-        var clientEntity = clientMapper.toEntity(loanStatementRequestDto);
-        var passport = passportMapper.toEntity(loanStatementRequestDto);
-        clientEntity.setPassport(passport);
+        log.info("Client try to take offer {}", loanStatementRequestDto);
 
+        var clientEntity = createClientEntity(loanStatementRequestDto);
         var savedClient = clientRepository.save(clientEntity);
+        log.info("Client {} {} was saved successful", savedClient.getFirstName(), clientEntity.getLastName());
 
-        List<LoanOfferDto> loanOfferDtos = calculatorFeignClient.calculateLoanOffer(loanStatementRequestDto);
-
-        log.info("Result: {}", loanOfferDtos);
-
-
-        var statement = Statement.builder()
-            .client(savedClient)
-            .sesCode(100)
-            .creationDate(Instant.now())
-            .status(StatementStatus.PREAPPROVAL)
-            .build();
-
-        var statementId = statementRepository.save(statement).getId();
-        loanOfferDtos.forEach(loanOfferDto -> loanOfferDto.setStatementId(statementId));
+        var loanOfferDtos = calculatorFeignClient.sendLoanOffer(loanStatementRequestDto);
+        var statementEntity = createStatementEntity(savedClient);
+        loanOfferDtos.forEach(loanOfferDto -> loanOfferDto.setStatementId(statementEntity.getId()));
+        log.info("Offer list was calculated successful with statementId {}", statementEntity.getId());
 
         return loanOfferDtos;
     }
 
     public void selectOffer(LoanOfferDto loanOfferDto) {
         var statement = statementRepository.getReferenceById(loanOfferDto.getStatementId());
+        log.info("Offer {} was selected by client {} {}", loanOfferDto.getStatementId(),
+            statement.getClient().getLastName(),
+            statement.getClient().getFirstName());
 
-        statement.setStatus(StatementStatus.APPROVED);
-        statement.setStatusHistory(StatusHistory.builder()
+        changeStatusAndHistory(statement, StatementStatus.PREAPPROVAL, "Клиент выбрал оффер");
+        saveSelectedOffer(loanOfferDto, statement);
+        log.info("Statement attribute was successful updated");
+    }
+
+    public void calculate(FinishRegistrationRequestDto requestDto, String statementId) {
+        log.info("By statementId {} calculating credit offer with data {}", statementId, requestDto);
+        var statement = statementRepository.getReferenceById(UUID.fromString(statementId));
+        var client = statement.getClient();
+        var passport = updatePassportData(requestDto, client);
+
+        updateEmployment(requestDto, client, passport);
+
+        var scoringDataDto = createScoringDto(requestDto, passport, statement, client);
+
+        var creditDto = calculatorFeignClient.calculateCreditOffer(scoringDataDto);
+        log.info("Credit was calculated {}", creditDto);
+
+        var creditEntity = creditMapper.toEntity(creditDto);
+        creditEntity.setCreditStatus(CreditStatus.CALCULATED);
+
+        creditRepository.save(creditEntity);
+
+        statement.setCredit(creditEntity);
+
+        changeStatusAndHistory(statement, StatementStatus.APPROVED, "Кредит высчитан, всё хорошо");
+
+        log.info("Credit was successful calculated all variables was updated");
+    }
+
+    private void updateEmployment(FinishRegistrationRequestDto requestDto, Client client, Passport passport) {
+        var employment = employmentMapper.toEntity(requestDto.getEmploymentDto());
+        employment.setId(UUID.randomUUID());
+
+        client.setGender(requestDto.getGender());
+        client.setAccountNumber(requestDto.getAccountNumber());
+        client.setMaritalStatus(requestDto.getMaritalStatus());
+        client.setDependentAmount(requestDto.getDependentAmount());
+        client.setEmployment(employment);
+        client.setPassport(passport);
+    }
+
+    private Passport updatePassportData(FinishRegistrationRequestDto requestDto, Client client) {
+
+        return client.getPassport()
+            .toBuilder()
+            .issueDate(requestDto.getPassportIssueDate())
+            .issueBranch(requestDto.getPassportIssueBranch())
+            .build();
+    }
+
+    private Client createClientEntity(LoanStatementRequestDto loanStatementRequestDto) {
+        var clientEntity = clientMapper.toEntity(loanStatementRequestDto);
+        var passport = passportMapper.toEntity(loanStatementRequestDto);
+        passport.setId(UUID.randomUUID());
+        clientEntity.setPassport(passport);
+        return clientEntity;
+    }
+
+    private Statement createStatementEntity(Client savedClient) {
+        var statement = Statement.builder()
+            .statusHistory(new ArrayList<>())
+            .client(savedClient)
+            .sesCode(100)
+            .creationDate(Instant.now())
+            .build();
+
+        var statementEntity = statementRepository.save(statement);
+        statementEntity.getStatusHistory().add(StatusHistory.builder()
             .changeType(ChangeType.MANUAL)
-            .status("Client select offer")
+            .status("Выдан список с предварительными условиями кредита")
             .time(Instant.now())
             .build());
+
+        return statementEntity;
+    }
+
+    private void changeStatusAndHistory(Statement statement, StatementStatus status, String statusInfo) {
+        statement.setStatus(status);
+        statement.getStatusHistory().add(StatusHistory.builder()
+            .changeType(ChangeType.MANUAL)
+            .status(statusInfo)
+            .time(Instant.now())
+            .build());
+    }
+
+    private void saveSelectedOffer(LoanOfferDto loanOfferDto, Statement statement) {
         statement.setAppliedOffer(AppliedOffer.builder()
             .statementId(loanOfferDto.getStatementId())
             .rate(loanOfferDto.getRate())
@@ -80,36 +158,25 @@ public class DealService {
             .build());
     }
 
-    public void calculate(FinishRegistrationRequestDto finishRegistrationRequestDto, String statementId) {
-        var statement = statementRepository.getReferenceById(UUID.fromString(statementId));
-        var client = statement.getClient();
-        var passport = client.getPassport();
-        var scoringDataDto = ScoringDataDto.builder()
-            .gender(finishRegistrationRequestDto.getGender())
-            .maritalStatus(finishRegistrationRequestDto.getMaritalStatus())
-            .dependentAmount(finishRegistrationRequestDto.getDependentAmount())
-            .passportIssueDate(client.getPassport().getIssueDate())
-            .passportIssueBranch(client.getPassport().getIssueBranch())
-            .account(finishRegistrationRequestDto.getAccountNumber())
-            .employment(finishRegistrationRequestDto.getEmploymentDto())
+    private static ScoringDataDto createScoringDto(FinishRegistrationRequestDto requestDto, Passport passport, Statement statement, Client client) {
+        return ScoringDataDto.builder()
+            .gender(requestDto.getGender())
+            .maritalStatus(requestDto.getMaritalStatus())
+            .dependentAmount(requestDto.getDependentAmount())
+            .passportIssueDate(requestDto.getPassportIssueDate())
+            .passportIssueBranch(requestDto.getPassportIssueBranch())
+            .account(requestDto.getAccountNumber())
+            .employment(requestDto.getEmploymentDto())
+            .passportSeries(passport.getSeries())
+            .passportNumber(passport.getNumber())
             .term(statement.getAppliedOffer().term())
             .amount(statement.getAppliedOffer().requestedAmount())
+            .isInsuranceEnabled(statement.getAppliedOffer().isInsuranceEnabled())
+            .isSalaryClient(statement.getAppliedOffer().isSalaryClient())
             .firstName(client.getFirstName())
             .lastName(client.getLastName())
             .middleName(client.getMiddleName())
             .birthdate(client.getBirthdate())
-            .passportSeries(passport.getSeries())
-            .passportNumber(passport.getNumber())
-            .isInsuranceEnabled(statement.getAppliedOffer().isInsuranceEnabled())
-            .isSalaryClient(statement.getAppliedOffer().isSalaryClient())
             .build();
-
-        calculatorFeignClient.calculateCreditOffer(scoringDataDto);
-        log.info("SUCCESS!!!");
-//
-//
-//        client.setEmployment(finishRegistrationRequestDto.getEmploymentDto());
-
-
     }
 }

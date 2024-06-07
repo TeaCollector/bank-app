@@ -1,6 +1,8 @@
 package ru.alex.msdeal.entity;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
@@ -9,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import ru.alex.msdeal.entity.constant.StatementStatus;
+
 
 @Builder
 @Getter
@@ -29,12 +32,12 @@ public class Statement {
     )
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id")
     private Client client;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "credit_id")
     private Credit credit;
 
@@ -51,7 +54,7 @@ public class Statement {
     private Integer sesCode;
 
     @Type(type = "jsonb")
-    private StatusHistory statusHistory;
+    private List<StatusHistory> statusHistory = new ArrayList<>();
 
 
 }

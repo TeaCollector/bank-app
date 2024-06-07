@@ -1,6 +1,8 @@
 package ru.alex.msdeal.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
@@ -36,14 +38,14 @@ public class Credit {
 
     private Integer term;
 
-    private BigDecimal MonthlyPayment;
+    private BigDecimal monthlyPayment;
 
     private BigDecimal rate;
 
     private BigDecimal psk;
 
     @Type(type = "jsonb")
-    private PaymentSchedule paymentSchedule;
+    private List<PaymentSchedule> paymentSchedule = new ArrayList<>();
 
     private Boolean insuranceEnabled;
 

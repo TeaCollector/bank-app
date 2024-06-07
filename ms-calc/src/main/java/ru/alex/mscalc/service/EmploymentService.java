@@ -23,7 +23,7 @@ public class EmploymentService {
         var rate = mainRate;
         switch (employmentDto.getEmploymentStatus()) {
             case WORKER -> rate = rate.add(BigDecimal.valueOf(1.00d));
-            case EMPLOYEE -> rate = rate.add(BigDecimal.valueOf(2.00d));
+            case EMPLOYED -> rate = rate.add(BigDecimal.valueOf(2.00d));
             case SELF_EMPLOYED -> rate = rate.add(BigDecimal.valueOf(0.50d));
             case UNEMPLOYED -> {
                 log.warn("Client is not working: reject");

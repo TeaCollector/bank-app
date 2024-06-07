@@ -4,10 +4,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 import javax.persistence.*;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -17,6 +14,7 @@ import ru.alex.msdeal.entity.constant.MaritalStatus;
 
 @Getter
 @Setter
+@Builder(toBuilder = true)
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -52,9 +50,8 @@ public class Client {
 
     private Integer dependentAmount;
 
-    @OneToOne(cascade = CascadeType.ALL)
     @Type(type = "jsonb")
-    @JoinColumn(name = "passport_id")
+    @Column(name = "passport_id")
     private Passport passport;
 
     @Type(type = "jsonb")

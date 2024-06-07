@@ -1,15 +1,3 @@
-create table passport (
-    passport_id  uuid,
-    series       varchar(4),
-    number       varchar(6),
-    issue_branch varchar(255),
-    issue_date   date,
-
-    constraint pk_passport_id
-        primary key (passport_id)
-
-);
-
 create table client (
     client_id        uuid,
     last_name        varchar(30) not null,
@@ -20,14 +8,13 @@ create table client (
     gender           varchar(15),
     marital_status   varchar(15),
     dependent_amount int4,
-    passport_id      uuid,
+    passport_id      jsonb,
     employment_id    jsonb,
     account_number   varchar(50),
 
 
     constraint pk_client_id
-        primary key (client_id),
-    constraint fk_client_passport_id foreign key (passport_id) references passport (passport_id)
+        primary key (client_id)
 );
 
 create table credit (
@@ -58,5 +45,7 @@ create table statement (
     status_history jsonb,
 
     constraint pk_statement_id
-        primary key (statement_id)
+        primary key (statement_id),
+    constraint fl_statement_client_id foreign key (client_id) references client (client_id),
+    constraint fk_statement_credit_id foreign key (credit_id) references credit (credit_id)
 );

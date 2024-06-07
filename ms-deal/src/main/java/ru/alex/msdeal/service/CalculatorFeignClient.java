@@ -5,6 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import ru.alex.msdeal.dto.CreditDto;
 import ru.alex.msdeal.dto.LoanOfferDto;
 import ru.alex.msdeal.dto.LoanStatementRequestDto;
 import ru.alex.msdeal.dto.ScoringDataDto;
@@ -14,8 +15,8 @@ import ru.alex.msdeal.dto.ScoringDataDto;
 public interface CalculatorFeignClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "offers", consumes = "application/json")
-    List<LoanOfferDto> calculateLoanOffer(@RequestBody LoanStatementRequestDto loanStatementRequestDto);
+    List<LoanOfferDto> sendLoanOffer(@RequestBody LoanStatementRequestDto loanStatementRequestDto);
 
     @RequestMapping(method = RequestMethod.POST, value = "calc")
-    void calculateCreditOffer(@RequestBody ScoringDataDto scoringDataDto);
+    CreditDto calculateCreditOffer(@RequestBody ScoringDataDto scoringDataDto);
 }

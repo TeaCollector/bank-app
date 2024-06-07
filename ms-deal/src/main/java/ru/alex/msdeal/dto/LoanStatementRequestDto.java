@@ -2,16 +2,13 @@ package ru.alex.msdeal.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
-@Data
+@Setter
+@Getter
 @Builder
-@NoArgsConstructor
+@ToString(exclude = {"passportSeries", "passportNumber"})
 @AllArgsConstructor
 public class LoanStatementRequestDto {
     private BigDecimal amount;

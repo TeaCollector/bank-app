@@ -1,13 +1,17 @@
-package ru.alex.msdeal.entity;
+package ru.alex.msdeal.dto;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import lombok.Data;
+import lombok.*;
 
 
-@Data
-public class PaymentSchedule implements Serializable {
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@Builder
+public class PaymentScheduleElementDto {
+
     private Integer number;
     private LocalDate date;
     private BigDecimal totalAmount;
