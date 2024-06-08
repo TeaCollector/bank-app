@@ -9,6 +9,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @Builder
+@ToString
 public class LoanOfferDto {
 
     private UUID statementId;

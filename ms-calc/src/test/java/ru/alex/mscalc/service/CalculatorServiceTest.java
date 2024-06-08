@@ -266,7 +266,7 @@ class CalculatorServiceTest {
             .dependentAmount(3_000)
             .maritalStatus(MaritalStatus.MARRIED)
             .employment(EmploymentDto.builder()
-                .employmentStatus(EmploymentStatus.EMPLOYEE)
+                .employmentStatus(EmploymentStatus.EMPLOYED)
                 .employerINN("496185400491")
                 .salary(BigDecimal.valueOf(95_000))
                 .workExperienceTotal(60)

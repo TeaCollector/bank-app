@@ -48,7 +48,7 @@ public class DealService {
         var loanOfferDtos = calculatorFeignClient.sendLoanOffer(loanStatementRequestDto);
         var statementEntity = createStatementEntity(savedClient);
         loanOfferDtos.forEach(loanOfferDto -> loanOfferDto.setStatementId(statementEntity.getId()));
-        log.info("Offer list was calculated successful with statementId {}", statementEntity.getId());
+        log.info("Offer list {} was calculated successful", loanOfferDtos);
 
         return loanOfferDtos;
     }
@@ -158,7 +158,7 @@ public class DealService {
             .build());
     }
 
-    private static ScoringDataDto createScoringDto(FinishRegistrationRequestDto requestDto, Passport passport, Statement statement, Client client) {
+    private ScoringDataDto createScoringDto(FinishRegistrationRequestDto requestDto, Passport passport, Statement statement, Client client) {
         return ScoringDataDto.builder()
             .gender(requestDto.getGender())
             .maritalStatus(requestDto.getMaritalStatus())
