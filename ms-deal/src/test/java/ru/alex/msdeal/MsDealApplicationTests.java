@@ -1,5 +1,6 @@
 package ru.alex.msdeal;
 
+import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,18 +14,23 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import ru.alex.msdeal.dto.LoanOfferDto;
 import ru.alex.msdeal.dto.LoanStatementRequestDto;
+import ru.alex.msdeal.repository.StatementRepository;
 import ru.alex.msdeal.service.CalculatorFeignClient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -36,6 +42,9 @@ class MsDealApplicationTests {
 
     @MockBean
     CalculatorFeignClient calculatorFeignClient;
+
+    @Autowired
+    StatementRepository statementRepository;
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.1-alpine");
 
@@ -67,16 +76,90 @@ class MsDealApplicationTests {
 
     @SneakyThrows
     @Test
-    void justTest() {
+    @DisplayName("Correct content type in HTTP response")
+    void correctContentType() {
         mockMvc.perform(post("/deal/statement")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getLoanStatementRequestBody()))
 
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Correct returned type in HTTP response")
+    void correctContentLengthType() {
+        mockMvc.perform(post("/deal/statement")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getLoanStatementRequestBody()))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(4))
+                .andReturn();
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("All statementId in loan offer are equals")
+    void equalStatementIdInLoanOffer() {
+        mockMvc.perform(post("/deal/statement")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getLoanStatementRequestBody()))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("[?($.[0].statementId == $.[1].statementId && " +
+                                    "$.[1].statementId == $.[2].statementId && " +
+                                    "$.[2].statementId == $.[3].statementId)]").hasJsonPath());
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("The client that was sent and saved is same")
+    void clientEquals() {
+        var objectMapper = new ObjectMapper();
+        var loanStatement = getLoanStatementObject();
+
+        var jsonLoanStatement = objectMapper.writeValueAsString(loanStatement);
+
+        var response = mockMvc.perform(post("/deal/statement")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonLoanStatement))
+
+                .andReturn();
+
+        var statementId = UUID.fromString(JsonPath.read(response.getResponse().getContentAsString(),
+                "$.statementId"));
+
+        var statementEntity = statementRepository.getReferenceById(statementId);
+        var clientEntity = statementEntity.getClient();
+
+        assertAll("Client must be the same",
+                () -> assertEquals(loanStatement.getFirstName(), clientEntity.getFirstName()),
+                () -> assertEquals(loanStatement.getLastName(), clientEntity.getLastName())
+        );
     }
 
     private String getLoanStatementRequestBody() {
-        var loanStatementReuest = LoanStatementRequestDto.builder()
+
+        return """
+                {
+                  "amount": 300000.00,
+                  "term": 6,
+                  "firstName": "Alexandr",
+                  "lastName": "Sergeev",
+                  "middleName": "Yurievich",
+                  "email": "sasha@gmail.com",
+                  "birthdate": "1992-05-21",
+                  "passportSeries": "4456",
+                  "passportNumber": "346894"
+                }
+                """;
+    }
+
+    private LoanStatementRequestDto getLoanStatementObject() {
+        return LoanStatementRequestDto.builder()
                 .email("sasha@gmail.com")
                 .amount(BigDecimal.valueOf(300000.00))
                 .passportSeries("4456")
@@ -87,20 +170,6 @@ class MsDealApplicationTests {
                 .middleName("Yurievich")
                 .term(6)
                 .build();
-
-        return """
-            {
-              "amount": 300000.00,
-              "term": 6,
-              "firstName": "Alexandr",
-              "lastName": "Sergeev",
-              "middleName": "Yurievich",
-              "email": "sasha@gmail.com",
-              "birthdate": "1992-05-21",
-              "passportSeries": "4456",
-              "passportNumber": "346894"
-            }
-            """;
     }
 
     private List<LoanOfferDto> getLoanOfferDto() {

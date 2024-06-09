@@ -11,7 +11,7 @@ import org.hibernate.annotations.TypeDef;
 import ru.alex.msdeal.entity.constant.Gender;
 import ru.alex.msdeal.entity.constant.MaritalStatus;
 
-
+@EqualsAndHashCode
 @Getter
 @Setter
 @Builder(toBuilder = true)
@@ -49,6 +49,9 @@ public class Client {
     private MaritalStatus maritalStatus;
 
     private Integer dependentAmount;
+
+    @OneToOne(mappedBy = "client", fetch = FetchType.LAZY)
+    private Statement statement;
 
     @Type(type = "jsonb")
     @Column(name = "passport_id")

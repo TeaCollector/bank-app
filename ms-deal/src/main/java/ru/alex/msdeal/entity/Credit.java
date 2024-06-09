@@ -44,6 +44,9 @@ public class Credit {
 
     private BigDecimal psk;
 
+    @OneToOne(mappedBy = "credit", fetch = FetchType.LAZY)
+    private Statement statement;
+
     @Type(type = "jsonb")
     private List<PaymentSchedule> paymentSchedule = new ArrayList<>();
 
