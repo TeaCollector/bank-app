@@ -20,6 +20,7 @@ import ru.alex.msdeal.dto.LoanStatementRequestDto;
 import ru.alex.msdeal.repository.StatementRepository;
 import ru.alex.msdeal.service.CalculatorFeignClient;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -35,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @ExtendWith({MockitoExtension.class})
+@Transactional
 class MsDealApplicationTests {
 
     @Autowired
@@ -142,7 +144,6 @@ class MsDealApplicationTests {
     }
 
     private String getLoanStatementRequestBody() {
-
         return """
                 {
                   "amount": 300000.00,
