@@ -8,11 +8,15 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.alex.msdeal.dto.*;
+import ru.alex.msdeal.dto.FinishRegistrationRequestDto;
+import ru.alex.msdeal.dto.LoanOfferDto;
+import ru.alex.msdeal.dto.LoanStatementRequestDto;
+import ru.alex.msdeal.dto.ScoringDataDto;
 import ru.alex.msdeal.entity.*;
 import ru.alex.msdeal.entity.constant.ChangeType;
 import ru.alex.msdeal.entity.constant.CreditStatus;
 import ru.alex.msdeal.entity.constant.StatementStatus;
+import ru.alex.msdeal.exception.StatementNotPreApprovedException;
 import ru.alex.msdeal.mapper.ClientMapper;
 import ru.alex.msdeal.mapper.CreditMapper;
 import ru.alex.msdeal.mapper.EmploymentMapper;
@@ -67,6 +71,11 @@ public class DealService {
     public void calculate(FinishRegistrationRequestDto requestDto, String statementId) {
         log.info("By statementId {} calculating credit offer with data {}", statementId, requestDto);
         var statement = statementRepository.getReferenceById(UUID.fromString(statementId));
+
+        if (statement.getStatus() != StatementStatus.PREAPPROVAL) {
+            throw new StatementNotPreApprovedException("you not pre approved your statement");
+        }
+
         var client = statement.getClient();
         var passport = updatePassportData(requestDto, client);
 
