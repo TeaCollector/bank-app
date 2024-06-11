@@ -1,7 +1,5 @@
 package ru.alex.msdeal;
 
-import java.util.UUID;
-import javax.transaction.Transactional;
 import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +14,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import ru.alex.msdeal.repository.StatementRepository;
 import ru.alex.msdeal.service.CalculatorFeignClient;
 import ru.alex.msdeal.util.DataForTest;
+import ru.alex.msdeal.util.PostgresTestContainer;
+
+import javax.transaction.Transactional;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -30,9 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
-@ExtendWith({ MockitoExtension.class })
+@ExtendWith({MockitoExtension.class})
 @Transactional
-@Import(PostgreSQLContainer.class)
+@Import(PostgresTestContainer.class)
 class MsDealApplicationTests {
 
     @Autowired
@@ -55,12 +57,12 @@ class MsDealApplicationTests {
     @DisplayName("Correct content type in HTTP response")
     void correctContentType() {
         mockMvc.perform(post("/deal/statement")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(DataForTest.getLoanStatementRequestBody()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getLoanStatementRequestBody()))
 
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andReturn();
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
     }
 
     @SneakyThrows
@@ -68,12 +70,12 @@ class MsDealApplicationTests {
     @DisplayName("Correct returned type in HTTP response")
     void correctContentLengthType() {
         mockMvc.perform(post("/deal/statement")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(DataForTest.getLoanStatementRequestBody()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getLoanStatementRequestBody()))
 
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(4))
-            .andReturn();
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(4))
+                .andReturn();
     }
 
     @SneakyThrows
@@ -81,13 +83,13 @@ class MsDealApplicationTests {
     @DisplayName("All statementId in loan offer are equals")
     void equalStatementIdInLoanOffer() {
         mockMvc.perform(post("/deal/statement")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(DataForTest.getLoanStatementRequestBody()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getLoanStatementRequestBody()))
 
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("[?($.[0].statementId == $.[1].statementId && " +
-                                "$.[1].statementId == $.[2].statementId && " +
-                                "$.[2].statementId == $.[3].statementId)]").hasJsonPath());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("[?($.[0].statementId == $.[1].statementId && " +
+                                    "$.[1].statementId == $.[2].statementId && " +
+                                    "$.[2].statementId == $.[3].statementId)]").hasJsonPath());
     }
 
     @SneakyThrows
@@ -95,13 +97,13 @@ class MsDealApplicationTests {
     @DisplayName("Correct saved statement in db")
     void correctSavedStatement() {
         var response = mockMvc.perform(post("/deal/statement")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(DataForTest.getLoanStatementRequestBody()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getLoanStatementRequestBody()))
 
-            .andReturn();
+                .andReturn();
 
         var statementId = UUID.fromString(JsonPath.read(response.getResponse().getContentAsString(),
-            "$.[0].statementId"));
+                "$.[0].statementId"));
 
         var statementEntity = statementRepository.getReferenceById(statementId);
 
@@ -115,24 +117,24 @@ class MsDealApplicationTests {
         var loanStatement = DataForTest.getLoanStatementObject();
 
         var response = mockMvc.perform(post("/deal/statement")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(DataForTest.getLoanStatementRequestBody()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getLoanStatementRequestBody()))
 
-            .andReturn();
+                .andReturn();
 
         var statementId = UUID.fromString(JsonPath.read(response.getResponse().getContentAsString(),
-            "$.[0].statementId"));
+                "$.[0].statementId"));
 
         var statementEntity = statementRepository.getReferenceById(statementId);
         var clientEntity = statementEntity.getClient();
 
         assertAll("Client must be the same",
-            () -> assertEquals(loanStatement.getFirstName(), clientEntity.getFirstName()),
-            () -> assertEquals(loanStatement.getLastName(), clientEntity.getLastName()),
-            () -> assertEquals(loanStatement.getFirstName(), clientEntity.getFirstName()),
-            () -> assertEquals(loanStatement.getMiddleName(), clientEntity.getMiddleName()),
-            () -> assertEquals(loanStatement.getBirthdate(), clientEntity.getBirthdate()),
-            () -> assertEquals(loanStatement.getEmail(), clientEntity.getEmail())
+                () -> assertEquals(loanStatement.getFirstName(), clientEntity.getFirstName()),
+                () -> assertEquals(loanStatement.getLastName(), clientEntity.getLastName()),
+                () -> assertEquals(loanStatement.getFirstName(), clientEntity.getFirstName()),
+                () -> assertEquals(loanStatement.getMiddleName(), clientEntity.getMiddleName()),
+                () -> assertEquals(loanStatement.getBirthdate(), clientEntity.getBirthdate()),
+                () -> assertEquals(loanStatement.getEmail(), clientEntity.getEmail())
         );
     }
 
@@ -143,24 +145,24 @@ class MsDealApplicationTests {
         var loanStatement = DataForTest.getLoanStatementObject();
 
         var response = mockMvc.perform(post("/deal/statement")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(DataForTest.getLoanStatementRequestBody()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getLoanStatementRequestBody()))
 
-            .andReturn();
+                .andReturn();
 
         var statementId = UUID.fromString(JsonPath.read(response.getResponse().getContentAsString(),
-            "$.[0].statementId"));
+                "$.[0].statementId"));
 
         var statementEntity = statementRepository.getReferenceById(statementId);
         var clientEntity = statementEntity.getClient();
 
         assertAll("Client must be the same",
-            () -> assertEquals(loanStatement.getFirstName(), clientEntity.getFirstName()),
-            () -> assertEquals(loanStatement.getLastName(), clientEntity.getLastName()),
-            () -> assertEquals(loanStatement.getFirstName(), clientEntity.getFirstName()),
-            () -> assertEquals(loanStatement.getMiddleName(), clientEntity.getMiddleName()),
-            () -> assertEquals(loanStatement.getBirthdate(), clientEntity.getBirthdate()),
-            () -> assertEquals(loanStatement.getEmail(), clientEntity.getEmail())
+                () -> assertEquals(loanStatement.getFirstName(), clientEntity.getFirstName()),
+                () -> assertEquals(loanStatement.getLastName(), clientEntity.getLastName()),
+                () -> assertEquals(loanStatement.getFirstName(), clientEntity.getFirstName()),
+                () -> assertEquals(loanStatement.getMiddleName(), clientEntity.getMiddleName()),
+                () -> assertEquals(loanStatement.getBirthdate(), clientEntity.getBirthdate()),
+                () -> assertEquals(loanStatement.getEmail(), clientEntity.getEmail())
         );
     }
 
@@ -170,35 +172,35 @@ class MsDealApplicationTests {
     void correctUpdatedSelectedOffer() {
         var objectMapper = new ObjectMapper();
         var responseWithOffers = mockMvc.perform(post("/deal/statement")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(DataForTest.getLoanStatementRequestBody()))
-            .andReturn();
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getLoanStatementRequestBody()))
+                .andReturn();
 
         var statementId = UUID.fromString(JsonPath.read(responseWithOffers.getResponse().getContentAsString(),
-            "$.[0].statementId"));
+                "$.[0].statementId"));
 
         var selectedOffer = DataForTest.getSelectedLoanOffer();
         selectedOffer.setStatementId(statementId);
 
         mockMvc.perform(post("/deal/offer/select")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(selectedOffer)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(selectedOffer)))
 
-            .andExpect(status().isOk());
+                .andExpect(status().isOk());
 
         var statementEntity = statementRepository.getReferenceById(statementId);
 
         var appliedOffer = statementEntity.getAppliedOffer();
 
         assertAll("Applied offer and selected offer equals",
-            () -> assertEquals(selectedOffer.getRate(), appliedOffer.rate()),
-            () -> assertEquals(selectedOffer.getRate(), appliedOffer.rate()),
-            () -> assertEquals(selectedOffer.getTerm(), appliedOffer.term()),
-            () -> assertEquals(selectedOffer.getStatementId(), appliedOffer.statementId()),
-            () -> assertEquals(selectedOffer.getRequestAmount(), appliedOffer.requestedAmount()),
-            () -> assertEquals(selectedOffer.getMonthlyPayment(), appliedOffer.monthlyPayment()),
-            () -> assertEquals(selectedOffer.getIsInsuranceEnabled(), appliedOffer.isInsuranceEnabled()),
-            () -> assertEquals(selectedOffer.getIsSalaryClient(), appliedOffer.isSalaryClient()));
+                () -> assertEquals(selectedOffer.getRate(), appliedOffer.rate()),
+                () -> assertEquals(selectedOffer.getRate(), appliedOffer.rate()),
+                () -> assertEquals(selectedOffer.getTerm(), appliedOffer.term()),
+                () -> assertEquals(selectedOffer.getStatementId(), appliedOffer.statementId()),
+                () -> assertEquals(selectedOffer.getRequestAmount(), appliedOffer.requestedAmount()),
+                () -> assertEquals(selectedOffer.getMonthlyPayment(), appliedOffer.monthlyPayment()),
+                () -> assertEquals(selectedOffer.getIsInsuranceEnabled(), appliedOffer.isInsuranceEnabled()),
+                () -> assertEquals(selectedOffer.getIsSalaryClient(), appliedOffer.isSalaryClient()));
     }
 
     @SneakyThrows
@@ -207,27 +209,27 @@ class MsDealApplicationTests {
     void correctSaveCreditEntity() {
         var objectMapper = new ObjectMapper();
         var responseWithOffers = mockMvc.perform(post("/deal/statement")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(DataForTest.getLoanStatementRequestBody()))
-            .andReturn();
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getLoanStatementRequestBody()))
+                .andReturn();
 
         var statementId = UUID.fromString(JsonPath.read(responseWithOffers.getResponse().getContentAsString(),
-            "$.[0].statementId"));
+                "$.[0].statementId"));
 
         var selectedOffer = DataForTest.getSelectedLoanOffer();
         selectedOffer.setStatementId(statementId);
 
         mockMvc.perform(post("/deal/offer/select")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(selectedOffer)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(selectedOffer)))
 
-            .andExpect(status().isOk());
+                .andExpect(status().isOk());
 
         mockMvc.perform(post("/deal/calculate/{statementId}", statementId)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(DataForTest.getFinishRegistrationRequestDto()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getFinishRegistrationRequestDto()))
 
-            .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
 
     @SneakyThrows
@@ -235,22 +237,22 @@ class MsDealApplicationTests {
     @DisplayName("Throw exception when statement status not pre approved")
     void throwExceptionIfStatementNotPreApproved() {
         var responseWithOffers = mockMvc.perform(post("/deal/statement")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(DataForTest.getLoanStatementRequestBody()))
-            .andReturn();
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getLoanStatementRequestBody()))
+                .andReturn();
 
         var statementId = UUID.fromString(JsonPath.read(responseWithOffers.getResponse().getContentAsString(),
-            "$.[0].statementId"));
+                "$.[0].statementId"));
 
         var selectedOffer = DataForTest.getSelectedLoanOffer();
         selectedOffer.setStatementId(statementId);
 
         mockMvc.perform(post("/deal/calculate/{statementId}", statementId)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(DataForTest.getFinishRegistrationRequestDto()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(DataForTest.getFinishRegistrationRequestDto()))
 
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Sorry, your loan was refused: you not pre approved your statement"));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Sorry, your loan was refused: you not pre approved your statement"));
 
     }
 }

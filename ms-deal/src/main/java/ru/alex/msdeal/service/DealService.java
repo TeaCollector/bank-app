@@ -90,7 +90,6 @@ public class DealService {
         creditEntity.setCreditStatus(CreditStatus.CALCULATED);
 
         creditRepository.save(creditEntity);
-
         statement.setCredit(creditEntity);
 
         changeStatusAndHistory(statement, StatementStatus.APPROVED, "Кредит высчитан, всё хорошо");

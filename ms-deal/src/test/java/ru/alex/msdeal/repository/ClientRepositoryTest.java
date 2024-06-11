@@ -7,17 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.testcontainers.containers.PostgreSQLContainer;
 import ru.alex.msdeal.entity.Client;
 import ru.alex.msdeal.entity.constant.Gender;
 import ru.alex.msdeal.util.DataForTest;
+import ru.alex.msdeal.util.PostgresTestContainer;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(PostgreSQLContainer.class)
+@Import(PostgresTestContainer.class)
 class ClientRepositoryTest {
 
     @Autowired
