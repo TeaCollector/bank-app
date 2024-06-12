@@ -9,16 +9,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import ru.alex.msdeal.repository.StatementRepository;
 import ru.alex.msdeal.service.CalculatorFeignClient;
 import ru.alex.msdeal.util.DataForTest;
-import ru.alex.msdeal.util.PostgresTestContainer;
+import ru.alex.msdeal.util.PostgresContainer;
 
 import javax.transaction.Transactional;
 import java.util.UUID;
@@ -31,11 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @AutoConfigureMockMvc
-@SpringBootTest
-@ExtendWith({MockitoExtension.class})
 @Transactional
-@Import(PostgresTestContainer.class)
-class MsDealApplicationTests {
+@ExtendWith({MockitoExtension.class})
+class MsDealApplicationTests extends PostgresContainer {
 
     @Autowired
     MockMvc mockMvc;

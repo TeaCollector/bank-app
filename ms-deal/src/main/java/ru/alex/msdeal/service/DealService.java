@@ -33,6 +33,7 @@ import ru.alex.msdeal.repository.StatementRepository;
 public class DealService {
 
     private final CalculatorFeignClient calculatorFeignClient;
+
     private final ClientRepository clientRepository;
     private final StatementRepository statementRepository;
     private final CreditRepository creditRepository;

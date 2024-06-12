@@ -3,10 +3,14 @@ package ru.alex.msdeal.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import lombok.Data;
+
+import lombok.*;
 
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@EqualsAndHashCode
 public class PaymentSchedule implements Serializable {
     private Integer number;
     private LocalDate date;

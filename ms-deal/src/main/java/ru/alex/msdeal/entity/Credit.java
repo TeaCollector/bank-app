@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -18,6 +15,7 @@ import ru.alex.msdeal.entity.constant.CreditStatus;
 
 @Getter
 @Setter
+@Builder
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @NoArgsConstructor
 @AllArgsConstructor
