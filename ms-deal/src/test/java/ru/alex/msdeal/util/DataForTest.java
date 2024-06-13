@@ -1,5 +1,11 @@
 package ru.alex.msdeal.util;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 import ru.alex.msdeal.dto.CreditDto;
 import ru.alex.msdeal.dto.LoanOfferDto;
@@ -13,16 +19,12 @@ import ru.alex.msdeal.entity.constant.*;
 import ru.alex.msdeal.mapper.PaymentScheduleMapper;
 import ru.alex.msdeal.mapper.PaymentScheduleMapperImpl;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
 
 @UtilityClass
 public class DataForTest {
 
-    PaymentScheduleMapper paymentScheduleMapper = new PaymentScheduleMapperImpl();
+    private final PaymentScheduleMapper paymentScheduleMapper = new PaymentScheduleMapperImpl();
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     public UUID getStatementId() {
         return UUID.fromString("80b2d767-b937-49f7-a215-185f45fa3e47");
@@ -38,16 +40,16 @@ public class DataForTest {
 
     public Credit getCreditEntity() {
         return Credit.builder()
-                .creditStatus(CreditStatus.CALCULATED)
-                .salaryClient(false)
-                .insuranceEnabled(false)
-                .statement(null)
-                .term(6)
-                .paymentSchedule(paymentScheduleMapper.toEntityList(getPaymentSchedule()))
-                .rate(BigDecimal.valueOf(14))
-                .psk(BigDecimal.valueOf(312_368))
-                .monthlyPayment(BigDecimal.valueOf(52_061.4))
-                .build();
+            .creditStatus(CreditStatus.CALCULATED)
+            .salaryClient(false)
+            .insuranceEnabled(false)
+            .statement(null)
+            .term(6)
+            .paymentSchedule(paymentScheduleMapper.toEntityList(getPaymentSchedule()))
+            .rate(BigDecimal.valueOf(14))
+            .psk(BigDecimal.valueOf(312_368))
+            .monthlyPayment(BigDecimal.valueOf(52_061.4))
+            .build();
     }
 
     public Client getClientEntity() {
@@ -95,18 +97,8 @@ public class DataForTest {
             """;
     }
 
-    public LoanStatementRequestDto getLoanStatementObject() {
-        return LoanStatementRequestDto.builder()
-            .email("sasha@gmail.com")
-            .amount(BigDecimal.valueOf(300_000.00))
-            .passportSeries("4456")
-            .passportNumber("346894")
-            .birthdate(LocalDate.of(1992, 5, 21))
-            .firstName("Alexandr")
-            .lastName("Sergeev")
-            .middleName("Yurievich")
-            .term(6)
-            .build();
+    public LoanStatementRequestDto getLoanStatementObject() throws JsonProcessingException {
+        return objectMapper.readValue(getLoanStatementRequestBody(), LoanStatementRequestDto.class);
     }
 
 
@@ -156,6 +148,7 @@ public class DataForTest {
 
     public LoanOfferDto getSelectedLoanOffer() {
         return LoanOfferDto.builder()
+            .statementId(UUID.randomUUID())
             .requestAmount(BigDecimal.valueOf(300_000.00))
             .totalAmount(BigDecimal.valueOf(300_000.00))
             .monthlyPayment(BigDecimal.valueOf(52_210.14))
@@ -164,6 +157,10 @@ public class DataForTest {
             .isInsuranceEnabled(false)
             .isSalaryClient(false)
             .build();
+    }
+
+    public String getSelectedLoanOfferBody() throws JsonProcessingException {
+        return objectMapper.writeValueAsString(getSelectedLoanOffer());
     }
 
     public String getFinishRegistrationRequestDto() {
@@ -189,71 +186,71 @@ public class DataForTest {
 
     public CreditDto getCreditDto() {
         return CreditDto.builder()
-                .psk(BigDecimal.valueOf(312_368.40))
-                .rate(BigDecimal.valueOf(14.00))
-                .term(6)
-                .amount(BigDecimal.valueOf(300_000L))
-                .isInsuranceEnabled(false)
-                .isSalaryClient(false)
-                .paymentSchedule(getPaymentSchedule())
-                .build();
+            .psk(BigDecimal.valueOf(312_368.40))
+            .rate(BigDecimal.valueOf(14.00))
+            .term(6)
+            .amount(BigDecimal.valueOf(300_000L))
+            .isInsuranceEnabled(false)
+            .isSalaryClient(false)
+            .paymentSchedule(getPaymentSchedule())
+            .build();
     }
 
     public List<PaymentScheduleElementDto> getPaymentSchedule() {
         return List.of(
-                PaymentScheduleElementDto.builder()
-                        .number(1)
-                        .date(LocalDate.of(2024, 7, 11))
-                        .totalAmount(BigDecimal.valueOf(300_000L))
-                        .interestPayment(BigDecimal.valueOf(3_500.00))
-                        .debtPayment(BigDecimal.valueOf(48_561.40))
-                        .remainingDebt(BigDecimal.valueOf(251_438.60))
-                        .build(),
+            PaymentScheduleElementDto.builder()
+                .number(1)
+                .date(LocalDate.of(2024, 7, 11))
+                .totalAmount(BigDecimal.valueOf(300_000L))
+                .interestPayment(BigDecimal.valueOf(3_500.00))
+                .debtPayment(BigDecimal.valueOf(48_561.40))
+                .remainingDebt(BigDecimal.valueOf(251_438.60))
+                .build(),
 
-                PaymentScheduleElementDto.builder()
-                        .number(2)
-                        .date(LocalDate.of(2024, 8, 11))
-                        .totalAmount(BigDecimal.valueOf(300_000L))
-                        .interestPayment(BigDecimal.valueOf(2_933.45))
-                        .debtPayment(BigDecimal.valueOf(49_127.95))
-                        .remainingDebt(BigDecimal.valueOf(202_310.65))
-                        .build(),
+            PaymentScheduleElementDto.builder()
+                .number(2)
+                .date(LocalDate.of(2024, 8, 11))
+                .totalAmount(BigDecimal.valueOf(300_000L))
+                .interestPayment(BigDecimal.valueOf(2_933.45))
+                .debtPayment(BigDecimal.valueOf(49_127.95))
+                .remainingDebt(BigDecimal.valueOf(202_310.65))
+                .build(),
 
-                PaymentScheduleElementDto.builder()
-                        .number(3)
-                        .date(LocalDate.of(2024, 9, 11))
-                        .totalAmount(BigDecimal.valueOf(300_000L))
-                        .interestPayment(BigDecimal.valueOf(2_360.29))
-                        .debtPayment(BigDecimal.valueOf(49_701.11))
-                        .remainingDebt(BigDecimal.valueOf(152_609.54))
-                        .build(),
+            PaymentScheduleElementDto.builder()
+                .number(3)
+                .date(LocalDate.of(2024, 9, 11))
+                .totalAmount(BigDecimal.valueOf(300_000L))
+                .interestPayment(BigDecimal.valueOf(2_360.29))
+                .debtPayment(BigDecimal.valueOf(49_701.11))
+                .remainingDebt(BigDecimal.valueOf(152_609.54))
+                .build(),
 
-                PaymentScheduleElementDto.builder()
-                        .number(4)
-                        .date(LocalDate.of(2024, 10, 11))
-                        .totalAmount(BigDecimal.valueOf(300_000L))
-                        .interestPayment(BigDecimal.valueOf(1_780.44))
-                        .debtPayment(BigDecimal.valueOf(50_280.96))
-                        .remainingDebt(BigDecimal.valueOf(102_328.58))
-                        .build(),
+            PaymentScheduleElementDto.builder()
+                .number(4)
+                .date(LocalDate.of(2024, 10, 11))
+                .totalAmount(BigDecimal.valueOf(300_000L))
+                .interestPayment(BigDecimal.valueOf(1_780.44))
+                .debtPayment(BigDecimal.valueOf(50_280.96))
+                .remainingDebt(BigDecimal.valueOf(102_328.58))
+                .build(),
 
-                PaymentScheduleElementDto.builder()
-                        .number(5)
-                        .date(LocalDate.of(2024, 11, 11))
-                        .totalAmount(BigDecimal.valueOf(300_000L))
-                        .interestPayment(BigDecimal.valueOf(1_193.83))
-                        .debtPayment(BigDecimal.valueOf(50_867.57))
-                        .remainingDebt(BigDecimal.valueOf(51_461.01))
-                        .build(),
+            PaymentScheduleElementDto.builder()
+                .number(5)
+                .date(LocalDate.of(2024, 11, 11))
+                .totalAmount(BigDecimal.valueOf(300_000L))
+                .interestPayment(BigDecimal.valueOf(1_193.83))
+                .debtPayment(BigDecimal.valueOf(50_867.57))
+                .remainingDebt(BigDecimal.valueOf(51_461.01))
+                .build(),
 
-                PaymentScheduleElementDto.builder()
-                        .number(6)
-                        .date(LocalDate.of(2024, 12, 11))
-                        .totalAmount(BigDecimal.valueOf(300_000L))
-                        .interestPayment(BigDecimal.valueOf(600.38))
-                        .debtPayment(BigDecimal.valueOf(51_461.02))
-                        .remainingDebt(BigDecimal.valueOf(-0.01))
-                        .build()
+            PaymentScheduleElementDto.builder()
+                .number(6)
+                .date(LocalDate.of(2024, 12, 11))
+                .totalAmount(BigDecimal.valueOf(300_000L))
+                .interestPayment(BigDecimal.valueOf(600.38))
+                .debtPayment(BigDecimal.valueOf(51_461.02))
+                .remainingDebt(BigDecimal.valueOf(-0.01))
+                .build()
         );
     }
 }

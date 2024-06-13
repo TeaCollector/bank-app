@@ -122,7 +122,7 @@ class MsCalcApplicationTests {
               "maritalStatus": "MARRIED",
               "dependentAmount": 3000,
               "employment": {
-                 "employmentStatus": "EMPLOYEE",
+                 "employmentStatus": "EMPLOYED",
                  "employerINN": "31565562234",
                  "salary": 95000,
                  "position": "TOP_MANAGER",

@@ -11,6 +11,7 @@ import org.hibernate.annotations.TypeDef;
 import ru.alex.msdeal.entity.constant.Gender;
 import ru.alex.msdeal.entity.constant.MaritalStatus;
 
+
 @EqualsAndHashCode
 @Getter
 @Setter

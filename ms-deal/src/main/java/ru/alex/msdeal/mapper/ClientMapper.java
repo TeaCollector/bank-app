@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 import ru.alex.msdeal.dto.LoanStatementRequestDto;
 import ru.alex.msdeal.entity.Client;
 
+
 @Mapper(componentModel = "spring")
 public interface ClientMapper extends Mappable<Client, LoanStatementRequestDto> {
 

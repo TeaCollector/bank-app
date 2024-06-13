@@ -9,6 +9,7 @@ import lombok.Setter;
 import ru.alex.msdeal.entity.constant.Gender;
 import ru.alex.msdeal.entity.constant.MaritalStatus;
 
+
 @Getter
 @Setter
 @Builder

@@ -21,9 +21,9 @@ class CreditRepositoryTest extends PostgresContainer {
     }
 
     @Test
-    @DisplayName("Correct working foreign key to statement")
+    @DisplayName("Correct working foreign key from credit to statement")
     void correctForeignKey() {
-        var credit = creditRepository.findById(DataForTest.getCreditId()).get();
+        var credit = creditRepository.findById(DataForTest.getCreditId()).orElseThrow();
 
         var statement = credit.getStatement();
 

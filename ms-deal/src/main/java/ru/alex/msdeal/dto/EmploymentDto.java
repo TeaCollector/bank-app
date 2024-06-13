@@ -1,7 +1,10 @@
 package ru.alex.msdeal.dto;
 
 import java.math.BigDecimal;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ru.alex.msdeal.entity.constant.EmploymentPosition;
 import ru.alex.msdeal.entity.constant.EmploymentStatus;
 
@@ -9,7 +12,7 @@ import ru.alex.msdeal.entity.constant.EmploymentStatus;
 @Getter
 @Setter
 @Builder
-@ToString(of = {"employmentStatus", "employerInn", "position", "workExperienceTotal", "workExperienceCurrent"})
+@ToString(of = { "employmentStatus", "employerInn", "position", "workExperienceTotal", "workExperienceCurrent" })
 public class EmploymentDto {
 
     private EmploymentStatus employmentStatus;

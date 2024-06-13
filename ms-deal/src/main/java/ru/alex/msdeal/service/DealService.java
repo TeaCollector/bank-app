@@ -16,6 +16,7 @@ import ru.alex.msdeal.entity.*;
 import ru.alex.msdeal.entity.constant.ChangeType;
 import ru.alex.msdeal.entity.constant.CreditStatus;
 import ru.alex.msdeal.entity.constant.StatementStatus;
+import ru.alex.msdeal.exception.StatementNotFoundException;
 import ru.alex.msdeal.exception.StatementNotPreApprovedException;
 import ru.alex.msdeal.mapper.ClientMapper;
 import ru.alex.msdeal.mapper.CreditMapper;
@@ -51,15 +52,17 @@ public class DealService {
         log.info("Client {} {} was saved successful", savedClient.getFirstName(), clientEntity.getLastName());
 
         var loanOfferDtos = calculatorFeignClient.sendLoanOffer(loanStatementRequestDto);
-        var statementEntity = createStatementEntity(savedClient);
-        loanOfferDtos.forEach(loanOfferDto -> loanOfferDto.setStatementId(statementEntity.getId()));
+        var statement = createStatementEntity(savedClient);
+
+        loanOfferDtos.forEach(loanOfferDto -> loanOfferDto.setStatementId(statement.getId()));
         log.info("Offer list {} was calculated successful", loanOfferDtos);
 
         return loanOfferDtos;
     }
 
     public void selectOffer(LoanOfferDto loanOfferDto) {
-        var statement = statementRepository.getReferenceById(loanOfferDto.getStatementId());
+        var statement = statementRepository.findById(loanOfferDto.getStatementId())
+            .orElseThrow(() -> new StatementNotFoundException("Statement №" + loanOfferDto.getStatementId() + " not found"));
         log.info("Offer {} was selected by client {} {}", loanOfferDto.getStatementId(),
             statement.getClient().getLastName(),
             statement.getClient().getFirstName());
@@ -71,7 +74,8 @@ public class DealService {
 
     public void calculate(FinishRegistrationRequestDto requestDto, String statementId) {
         log.info("By statementId {} calculating credit offer with data {}", statementId, requestDto);
-        var statement = statementRepository.getReferenceById(UUID.fromString(statementId));
+        var statement = statementRepository.findById(UUID.fromString(statementId))
+            .orElseThrow(() -> new StatementNotFoundException("Statement №" + statementId + " not found"));
 
         if (statement.getStatus() != StatementStatus.PREAPPROVAL) {
             throw new StatementNotPreApprovedException("you not pre approved your statement");
@@ -92,6 +96,7 @@ public class DealService {
 
         creditRepository.save(creditEntity);
         statement.setCredit(creditEntity);
+        statement.setSignDate(Instant.now());
 
         changeStatusAndHistory(statement, StatementStatus.APPROVED, "Кредит высчитан, всё хорошо");
 
@@ -137,7 +142,7 @@ public class DealService {
 
         var statementEntity = statementRepository.save(statement);
         statementEntity.getStatusHistory().add(StatusHistory.builder()
-            .changeType(ChangeType.MANUAL)
+            .changeType(ChangeType.AUTOMATIC)
             .status("Выдан список с предварительными условиями кредита")
             .time(Instant.now())
             .build());
@@ -148,7 +153,7 @@ public class DealService {
     private void changeStatusAndHistory(Statement statement, StatementStatus status, String statusInfo) {
         statement.setStatus(status);
         statement.getStatusHistory().add(StatusHistory.builder()
-            .changeType(ChangeType.MANUAL)
+            .changeType(ChangeType.AUTOMATIC)
             .status(statusInfo)
             .time(Instant.now())
             .build());

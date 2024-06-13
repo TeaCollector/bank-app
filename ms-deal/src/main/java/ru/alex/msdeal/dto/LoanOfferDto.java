@@ -2,6 +2,7 @@ package ru.alex.msdeal.dto;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import javax.validation.constraints.NotNull;
 import lombok.*;
 
 
@@ -13,6 +14,7 @@ import lombok.*;
 @EqualsAndHashCode
 public class LoanOfferDto {
 
+    @NotNull
     private UUID statementId;
     private BigDecimal requestAmount;
     private BigDecimal totalAmount;

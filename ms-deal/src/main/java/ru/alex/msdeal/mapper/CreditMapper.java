@@ -12,6 +12,6 @@ public interface CreditMapper extends Mappable<Credit, CreditDto> {
 
     @Mappings({
         @Mapping(target = "insuranceEnabled", source = "isInsuranceEnabled"),
-        @Mapping(target = "salaryClient", source = "isSalaryClient")})
+        @Mapping(target = "salaryClient", source = "isSalaryClient") })
     Credit toEntity(CreditDto creditDto);
 }

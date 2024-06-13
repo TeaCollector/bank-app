@@ -2,14 +2,14 @@ package ru.alex.msdeal.dto;
 
 import java.util.HashMap;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class MessageError {
     private String message;
     private Map<String, String> errors;

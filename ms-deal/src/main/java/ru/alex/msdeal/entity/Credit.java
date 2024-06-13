@@ -1,5 +1,6 @@
 package ru.alex.msdeal.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import ru.alex.msdeal.entity.constant.CreditStatus;
 @AllArgsConstructor
 @Table(name = "credit", schema = "public")
 @Entity(name = "Credit")
-public class Credit {
+public class Credit implements Serializable {
 
     @Id
     @Column(name = "credit_id")

@@ -33,21 +33,4 @@ class StatementRepositoryTest extends PostgresContainer {
 
         assertDoesNotThrow(() -> statementRepository.save(statement));
     }
-
-//    @Test
-//    @DisplayName("Correct save statement")
-//    void correctSaveStatement() {
-//        var statement = Statement.builder()
-//                .status(StatementStatus.APPROVED)
-//                .credit(null)
-//                .appliedOffer(null)
-//                .creationDate(Instant.now())
-//                .sesCode(105)
-//                .client(null)
-//                .statusHistory(null)
-//                .signDate(Instant.now())
-//                .build();
-//
-//        assertDoesNotThrow(() -> statementRepository.save(statement));
-//    }
 }

@@ -1,10 +1,10 @@
 package ru.alex.msdeal.entity.constant;
 
 public enum StatementStatus {
-    PREAPPROVAL("Почти подтверждено"),
-    APPROVED("Подтверждено"),
-    CC_DENIED("Отклонено"),
-    CC_APPROVED("ПОдтверждено"),
+    PREAPPROVAL("Предварительное одобрение"),
+    APPROVED("Одобрено"),
+    CC_DENIED("Отказ в выдаче кредита"),
+    CC_APPROVED("Выдача кредита одобрена"),
     PREPARE_DOCUMENTS("Подготовка документов"),
     DOCUMENT_CREATED("Создание документов"),
     CLIENT_DENIED("Отказ клиенту"),

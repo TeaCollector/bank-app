@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-@ToString(exclude = {"passportSeries", "passportNumber"})
+@ToString(exclude = { "passportSeries", "passportNumber" })
 @AllArgsConstructor
 public class LoanStatementRequestDto {
     private BigDecimal amount;

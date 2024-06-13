@@ -4,7 +4,7 @@ package ru.alex.msdeal.mapper;
 import java.util.List;
 
 
-public interface Mappable <E, D> {
+public interface Mappable<E, D> {
 
     E toEntity(D dto);
 

@@ -1,6 +1,7 @@
 package ru.alex.msdeal.api;
 
 import java.util.List;
+import javax.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -49,7 +50,7 @@ public interface DealApi {
         })
     )
     @PostMapping("offer/select")
-    ResponseEntity<Void> offerSelect(@RequestBody LoanOfferDto loanOfferDto);
+    ResponseEntity<Void> offerSelect(@Valid @RequestBody LoanOfferDto loanOfferDto);
 
     @Operation(summary = "Finish registration and calculate full credit purpose")
     @ApiResponses(value =
@@ -61,6 +62,6 @@ public interface DealApi {
         })
     )
     @PostMapping("calculate/{statementId}")
-    ResponseEntity<Void> calculate(@RequestBody FinishRegistrationRequestDto finishRegistrationRequestDto,
+    ResponseEntity<Void> calculate(@Valid @RequestBody FinishRegistrationRequestDto finishRegistrationRequestDto,
                                    @Parameter(name = "statementId") @PathVariable String statementId);
 }
