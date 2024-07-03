@@ -16,7 +16,6 @@ import ru.alex.mscalc.service.CalculatorService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("calculator")
 public class CalculatorController implements CalculatorApi {
 
     private final CalculatorService calculatorService;

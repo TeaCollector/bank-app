@@ -178,24 +178,6 @@ class CalculatorControllerTest {
 
     }
 
-//    @Test
-//    @DisplayName("@IsLatin is receive null value")
-//    @SneakyThrows
-//    void checkingAnnotationIsLatinOnNull() {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        var loanStatementRequestDto = String.format(getLoanStatementRequest(),
-//                "\"Alexandr\"", "\"sasha@mail.com\"", "\"1992-05-21\"");
-//        var loanStatementRequestDtoFromMapper = objectMapper.readValue(loanStatementRequestDto, LoanStatementRequestDto.class);
-//        loanStatementRequestDtoFromMapper.setMiddleName(null);
-//
-//
-//        mockMvc.perform(post("/calculator/offers")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(loanStatementRequestDtoFromMapper)))
-//
-//            .andExpect(status().isOk());
-//    }
-
     private String getLoanStatementRequest() {
         return """
                 {
@@ -228,7 +210,7 @@ class CalculatorControllerTest {
                   "maritalStatus": "MARRIED",
                   "dependentAmount": 30000.00,
                   "employment": {
-                        "employmentStatus": "EMPLOYEE",
+                        "employmentStatus": "EMPLOYED",
                         "employerINN": "396829604",
                         "salary": 95000.00,
                         "position": "SIMPLE_MANAGER",
