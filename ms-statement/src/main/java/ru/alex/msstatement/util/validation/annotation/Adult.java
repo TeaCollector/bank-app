@@ -3,11 +3,11 @@ package ru.alex.msstatement.util.validation.annotation;
 import java.lang.annotation.*;
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import ru.alex.mscalc.util.validation.AdultValidator;
+import ru.alex.msstatement.util.validation.AdultValidator;
 
 
 @Constraint(validatedBy = AdultValidator.class)
-@Target({ElementType.FIELD})
+@Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Adult {

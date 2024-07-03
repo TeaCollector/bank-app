@@ -18,7 +18,7 @@ import ru.alex.msstatement.dto.LoanStatementRequestDto;
 
 
 @Tag(name = "Statement controller", description = "For pre scoring all purpose")
-@RequestMapping("statement/")
+@RequestMapping("statement")
 public interface StatementApi {
 
     @Operation(summary = "Calculate loan offer by loan request")

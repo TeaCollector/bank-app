@@ -2,7 +2,7 @@ package ru.alex.msstatement.util.validation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import ru.alex.mscalc.util.validation.annotation.IsLatin;
+import ru.alex.msstatement.util.validation.annotation.IsLatin;
 
 
 public class LatinValidator implements ConstraintValidator<IsLatin, String> {

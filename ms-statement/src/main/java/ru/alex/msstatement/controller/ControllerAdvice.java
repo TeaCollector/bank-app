@@ -2,6 +2,9 @@ package ru.alex.msstatement.controller;
 
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -29,4 +32,15 @@ public class ControllerAdvice {
                     existingMessage + " " + newMessage));
         return new MessageError("Validation failed.", errors);
     }
+
+    @SneakyThrows
+    @ExceptionHandler(FeignException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public MessageError feignException(final FeignException e) {
+        var objectMapper = new ObjectMapper();
+        var errorMessage = objectMapper.readValue(e.contentUTF8(), MessageError.class);
+        log.error("Error description: {}", e.contentUTF8());
+        return new MessageError("Validation failed.", errorMessage.getErrors());
+    }
+
 }

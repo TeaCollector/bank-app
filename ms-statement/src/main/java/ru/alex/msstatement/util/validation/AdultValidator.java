@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import ru.alex.mscalc.util.validation.annotation.Adult;
+import ru.alex.msstatement.util.validation.annotation.Adult;
 
 
 public class AdultValidator implements ConstraintValidator<Adult, LocalDate> {
