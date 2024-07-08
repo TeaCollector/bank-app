@@ -160,7 +160,7 @@ class EmploymentServiceTest {
     private EmploymentDto getEmploymentDtoTemplate() {
         return EmploymentDto.builder()
             .employerINN("456234523005")
-            .employmentStatus(EmploymentStatus.EMPLOYEE)
+            .employmentStatus(EmploymentStatus.EMPLOYED)
             .position(Position.TOP_MANAGER)
             .workExperienceCurrent(20)
             .workExperienceTotal(56)
