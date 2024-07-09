@@ -40,7 +40,7 @@ public class KafkaProducerConfig {
         var newTopics = new ArrayList<NewTopic>();
 
         for (Theme theme : Theme.values()) {
-            newTopics.add(new NewTopic(theme.name(), 5, (short) 3));
+            newTopics.add(new NewTopic(theme.name(), 1, (short) 3));
         }
 
         return new KafkaAdmin.NewTopics(newTopics.toArray(NewTopic[]::new));

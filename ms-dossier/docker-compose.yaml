@@ -1,24 +1,22 @@
 version: '3.7'
 
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.4.4
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
   kafka:
-    image: confluentinc/cp-kafka:7.4.4
-    depends_on:
-      - zookeeper
+    image: confluentinc/cp-kafka:7.6.1
+    hostname: kafka-kraft
+    container_name: kafka-kraft
     ports:
       - "9092:9092"
-      - "9093:9092"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: BANK_APP:PLAINTEXT, PLAINTEXT:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092, BANK_APP://localhost:9093
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENERS: 'BANK_APP_INNER://kafka-kraft:29092,CONTROLLER://kafka-kraft:29093,BANK_APP://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'BANK_APP_INNER://kafka-kraft:29092,BANK_APP://localhost:9092'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-kraft:29093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'BANK_APP_INNER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,BANK_APP_INNER:PLAINTEXT,BANK_APP:PLAINTEXT'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
