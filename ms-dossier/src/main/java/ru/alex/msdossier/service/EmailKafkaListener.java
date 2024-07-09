@@ -18,6 +18,7 @@ import ru.alex.msdossier.dto.EmailMessage;
 import ru.alex.msdossier.dto.constant.Theme;
 
 
+@Async
 @Log4j2
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,6 @@ public class EmailKafkaListener {
     @Value("${ms-deal.address}")
     private String msDealAddress;
 
-    @Async
     @KafkaListener(topics = { "FINISH_REGISTRATION" }, groupId = "email-sender")
     public void sendEmailFinishRegistration(EmailMessage message) {
         var mailMessage = new SimpleMailMessage();
@@ -41,7 +41,6 @@ public class EmailKafkaListener {
         log.info("Message with theme: {}, was sent to: {}", message.theme(), message.address());
     }
 
-    @Async
     @KafkaListener(topics = "CREATE_DOCUMENT", groupId = "email-sender")
     public void sendEmailCreateDocument(EmailMessage message) {
         var mailMessage = new SimpleMailMessage();
@@ -55,7 +54,6 @@ public class EmailKafkaListener {
         log.info("Message with theme: {}, was sent to: {}", message.theme(), message.address());
     }
 
-    @Async
     @KafkaListener(topics = "SEND_DOCUMENT", groupId = "email-sender")
     public void sendEmailSendDocument(EmailMessage message) throws MessagingException, IOException {
         var mimeMessage = mailSender.createMimeMessage();
@@ -74,7 +72,6 @@ public class EmailKafkaListener {
         log.info("Message with theme: {}, was sent to: {}", message.theme(), message.address());
     }
 
-    @Async
     @KafkaListener(topics = "SEND_SES", groupId = "email-sender")
     public void sendEmailSesCode(EmailMessage message) {
         var mailMessage = new SimpleMailMessage();
@@ -88,7 +85,6 @@ public class EmailKafkaListener {
         log.info("Message with theme: {}, was sent to: {}", message.theme(), message.address());
     }
 
-    @Async
     @KafkaListener(topics = "CREDIT_ISSUED", groupId = "email-sender")
     public void sendEmailCreditIssued(EmailMessage message) {
         var mailMessage = new SimpleMailMessage();
@@ -101,7 +97,6 @@ public class EmailKafkaListener {
         log.info("Message with theme: {}, was sent to: {}", message.theme(), message.address());
     }
 
-    @Async
     @KafkaListener(topics = "STATEMENT_DENIED", groupId = "email-sender")
     public void sendEmailStatementDenied(EmailMessage message) {
         var mailMessage = new SimpleMailMessage();

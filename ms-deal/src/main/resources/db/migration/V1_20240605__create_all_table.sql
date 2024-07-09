@@ -4,7 +4,7 @@ create table client (
     first_name       varchar(30) not null,
     middle_name      varchar(30),
     birth_date       date not null,
-    email            varchar not null,
+    email            varchar not null unique,
     gender           varchar(15),
     marital_status   varchar(15),
     dependent_amount int4,
