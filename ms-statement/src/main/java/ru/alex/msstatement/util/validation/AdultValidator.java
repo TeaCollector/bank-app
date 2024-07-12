@@ -1,11 +1,10 @@
-package ru.alex.mscalc.util.validation;
+package ru.alex.msstatement.util.validation;
 
-import ru.alex.mscalc.util.validation.annotation.Adult;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 import java.time.Period;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+import ru.alex.msstatement.util.validation.annotation.Adult;
 
 
 public class AdultValidator implements ConstraintValidator<Adult, LocalDate> {
