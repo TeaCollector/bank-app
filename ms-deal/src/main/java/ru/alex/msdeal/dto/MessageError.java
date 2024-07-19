@@ -1,6 +1,5 @@
 package ru.alex.msdeal.dto;
 
-import java.util.HashMap;
 import java.util.Map;
 import lombok.*;
 
@@ -16,6 +15,5 @@ public class MessageError {
 
     public MessageError(final String message) {
         this.message = message;
-        this.errors = new HashMap<>();
     }
 }

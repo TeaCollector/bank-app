@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.alex.msdeal.dto.FinishRegistrationRequestDto;
 import ru.alex.msdeal.dto.LoanOfferDto;
 import ru.alex.msdeal.dto.LoanStatementRequestDto;
+import ru.alex.msdeal.dto.SesCodeDto;
 
 
 @Tag(name = "Deal controller", description = "For save and send all purpose")
@@ -64,4 +65,38 @@ public interface DealApi {
     @PostMapping("calculate/{statementId}")
     ResponseEntity<Void> calculate(@Valid @RequestBody FinishRegistrationRequestDto finishRegistrationRequestDto,
                                    @Parameter(name = "statementId") @PathVariable String statementId);
+
+    @Operation(summary = "Request for sending documents")
+    @ApiResponses(value =
+    @ApiResponse(
+        responseCode = "200",
+        description = "Void")
+    )
+    @PostMapping("document/{statementId}/send")
+    ResponseEntity<Void> sendDocument(@Parameter(name = "statementId") @PathVariable String statementId);
+
+    @Operation(summary = "Request for sign documents")
+    @ApiResponses(value =
+    @ApiResponse(
+        responseCode = "200",
+        description = "Void",
+        content = { @Content(
+            mediaType = "application/json")
+        })
+    )
+    @PostMapping("document/{statementId}/sign")
+    ResponseEntity<Void> signDocument(@Parameter(name = "statementId") @PathVariable String statementId);
+
+    @Operation(summary = "Code for sign documents")
+    @ApiResponses(value =
+    @ApiResponse(
+        responseCode = "200",
+        description = "Void",
+        content = { @Content(
+            mediaType = "application/json")
+        })
+    )
+    @PostMapping("document/{statementId}/code")
+    ResponseEntity<Void> codeSign(@Valid @RequestBody SesCodeDto sesCode,
+                                  @Parameter(name = "statementId") @PathVariable String statementId);
 }

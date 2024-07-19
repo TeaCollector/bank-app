@@ -9,6 +9,7 @@ import ru.alex.msdeal.api.DealApi;
 import ru.alex.msdeal.dto.FinishRegistrationRequestDto;
 import ru.alex.msdeal.dto.LoanOfferDto;
 import ru.alex.msdeal.dto.LoanStatementRequestDto;
+import ru.alex.msdeal.dto.SesCodeDto;
 import ru.alex.msdeal.service.DealService;
 
 
@@ -36,6 +37,30 @@ public class DealController implements DealApi {
     @Override
     public ResponseEntity<Void> calculate(FinishRegistrationRequestDto finishRegistrationRequestDto, String statementId) {
         dealService.calculate(finishRegistrationRequestDto, statementId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build();
+    }
+
+    @Override
+    public ResponseEntity<Void> sendDocument(String statementId) {
+        dealService.sendDocument(statementId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build();
+    }
+
+    @Override
+    public ResponseEntity<Void> signDocument(String statementId) {
+        dealService.signDocument(statementId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build();
+    }
+
+    @Override
+    public ResponseEntity<Void> codeSign(SesCodeDto sesCodeDto, String statementId) {
+        dealService.signCode(sesCodeDto, statementId);
         return ResponseEntity
             .status(HttpStatus.OK)
             .build();

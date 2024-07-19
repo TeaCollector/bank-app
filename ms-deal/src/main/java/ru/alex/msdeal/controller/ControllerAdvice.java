@@ -30,6 +30,6 @@ public class ControllerAdvice {
         var objectMapper = new ObjectMapper();
         var errorMessage = objectMapper.readValue(e.contentUTF8(), MessageError.class);
         log.error("Error description: {}", e.contentUTF8());
-        return new MessageError("Validation failed.", errorMessage.getErrors());
+        return new MessageError("Sorry, your loan was refused.", errorMessage.getErrors());
     }
 }

@@ -1,21 +1,21 @@
 package ru.alex.msdeal.service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import javax.transaction.Transactional;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.alex.msdeal.dto.FinishRegistrationRequestDto;
-import ru.alex.msdeal.dto.LoanOfferDto;
-import ru.alex.msdeal.dto.LoanStatementRequestDto;
-import ru.alex.msdeal.dto.ScoringDataDto;
+import ru.alex.msdeal.config.EmailSender;
+import ru.alex.msdeal.dto.*;
 import ru.alex.msdeal.entity.*;
 import ru.alex.msdeal.entity.constant.ChangeType;
 import ru.alex.msdeal.entity.constant.CreditStatus;
 import ru.alex.msdeal.entity.constant.StatementStatus;
+import ru.alex.msdeal.entity.constant.Theme;
+import ru.alex.msdeal.exception.ClientDeniedException;
+import ru.alex.msdeal.exception.SesCodeNotEqualsException;
 import ru.alex.msdeal.exception.StatementNotFoundException;
 import ru.alex.msdeal.exception.StatementNotPreApprovedException;
 import ru.alex.msdeal.mapper.ClientMapper;
@@ -44,6 +44,8 @@ public class DealService {
     private final PassportMapper passportMapper;
     private final CreditMapper creditMapper;
 
+    private final EmailSender emailSender;
+
     public List<LoanOfferDto> offer(LoanStatementRequestDto loanStatementRequestDto) {
         log.info("Client try to take offer {}", loanStatementRequestDto);
 
@@ -63,22 +65,29 @@ public class DealService {
     public void selectOffer(LoanOfferDto loanOfferDto) {
         var statement = statementRepository.findById(loanOfferDto.getStatementId())
             .orElseThrow(() -> new StatementNotFoundException("Statement №" + loanOfferDto.getStatementId() + " not found"));
+
+        if (Objects.isNull(loanOfferDto.getStatementId())) {
+            updateStatusAndHistory(statement, StatementStatus.CLIENT_DENIED, "Client denied to take loan");
+            throw new ClientDeniedException("You denied loan offer");
+        }
+
         log.info("Offer {} was selected by client {} {}", loanOfferDto.getStatementId(),
             statement.getClient().getLastName(),
             statement.getClient().getFirstName());
 
-        changeStatusAndHistory(statement, StatementStatus.PREAPPROVAL, "Клиент выбрал оффер");
         saveSelectedOffer(loanOfferDto, statement);
         log.info("Statement attribute was successful updated");
+
+        updateStatusAndHistory(statement, StatementStatus.PREAPPROVAL, "Pre approval loan");
+        emailSender.sendMail(buildMessage(statement.getClient(), statement, Theme.FINISH_REGISTRATION));
     }
 
     public void calculate(FinishRegistrationRequestDto requestDto, String statementId) {
         log.info("By statementId {} calculating credit offer with data {}", statementId, requestDto);
-        var statement = statementRepository.findById(UUID.fromString(statementId))
-            .orElseThrow(() -> new StatementNotFoundException("Statement №" + statementId + " not found"));
+        var statement = getStatement(statementId);
 
         if (statement.getStatus() != StatementStatus.PREAPPROVAL) {
-            throw new StatementNotPreApprovedException("you not pre approved your statement");
+            throw new StatementNotPreApprovedException("You not pre approved your statement");
         }
 
         var client = statement.getClient();
@@ -88,35 +97,85 @@ public class DealService {
 
         var scoringDataDto = createScoringDto(requestDto, passport, statement, client);
 
-        var creditDto = calculatorFeignClient.calculateCreditOffer(scoringDataDto);
-        log.info("Credit was calculated {}", creditDto);
+        var creditDto = new CreditDto();
+        try {
+            creditDto = calculatorFeignClient.calculateCreditOffer(scoringDataDto);
+        } catch (FeignException.FeignClientException exception) {
+            updateStatusAndHistory(statement, StatementStatus.CC_DENIED, "Loan was denied");
+            emailSender.sendMail(buildMessage(client, statement, Theme.STATEMENT_DENIED));
+            throw exception;
+        }
+
+        log.info("Credit was successful calculated {}", creditDto);
 
         var creditEntity = creditMapper.toEntity(creditDto);
         creditEntity.setCreditStatus(CreditStatus.CALCULATED);
 
-        creditRepository.save(creditEntity);
         statement.setCredit(creditEntity);
         statement.setSignDate(Instant.now());
 
-        changeStatusAndHistory(statement, StatementStatus.APPROVED, "Кредит высчитан, всё хорошо");
+        updateStatusAndHistory(statement, StatementStatus.CC_APPROVED, "Credit was calculated, all fine");
 
         log.info("Credit was successful calculated all variables was updated");
+
+        emailSender.sendMail(buildMessage(client, statement, Theme.CREATE_DOCUMENT));
     }
 
-    private void updateEmployment(FinishRegistrationRequestDto requestDto, Client client, Passport passport) {
-        var employment = employmentMapper.toEntity(requestDto.getEmploymentDto());
-        employment.setId(UUID.randomUUID());
+    public void sendDocument(String statementId) {
+        var statement = getStatement(statementId);
 
-        client.setGender(requestDto.getGender());
-        client.setAccountNumber(requestDto.getAccountNumber());
-        client.setMaritalStatus(requestDto.getMaritalStatus());
-        client.setDependentAmount(requestDto.getDependentAmount());
-        client.setEmployment(employment);
-        client.setPassport(passport);
+        updateStatusAndHistory(statement, StatementStatus.PREPARE_DOCUMENTS, "Preparing documents");
+
+        emailSender.sendMail(buildMessage(statement.getClient(), statement, Theme.SEND_DOCUMENT));
+        log.info("Client: {} receive document", statement.getClient().getEmail());
+    }
+
+    public void signDocument(String statementId) {
+        var statement = getStatement(statementId);
+
+        var sesCode = createRandomSesCode();
+        statement.setSesCode(sesCode);
+
+        updateStatusAndHistory(statement, StatementStatus.DOCUMENT_CREATED, "Document was created");
+
+        emailSender.sendMail(buildMessage(statement.getClient(), statement, Theme.SEND_SES, sesCode));
+        log.info("Ses-code was sent to client: {}", statement.getClient().getEmail());
+    }
+
+    private int createRandomSesCode() {
+        var number = new StringBuilder();
+
+        for (int i = 0; i < 6; i++) {
+            number.append(new Random().nextInt(0, 9));
+        }
+
+        return Integer.parseInt(number.toString());
+    }
+
+
+    public void signCode(SesCodeDto sesCodeDto, String statementId) {
+        var statement = getStatement(statementId);
+
+        if (statement.getSesCode().equals(sesCodeDto.getSesCode())) {
+            emailSender.sendMail(buildMessage(statement.getClient(), statement, Theme.CREDIT_ISSUED));
+        } else {
+            throw new SesCodeNotEqualsException("Sorry ses-code is not equals");
+        }
+
+        var credit = statement.getCredit();
+        credit.setCreditStatus(CreditStatus.ISSUED);
+
+        updateStatusAndHistory(statement, StatementStatus.DOCUMENT_SIGNED, "Document was signed");
+        updateStatusAndHistory(statement, StatementStatus.CREDIT_ISSUED, "Loan was taken, all fine");
+    }
+
+
+    private Statement getStatement(String statementId) {
+        return statementRepository.findById(UUID.fromString(statementId))
+            .orElseThrow(() -> new StatementNotFoundException("Statement №" + statementId + " not found"));
     }
 
     private Passport updatePassportData(FinishRegistrationRequestDto requestDto, Client client) {
-
         return client.getPassport()
             .toBuilder()
             .issueDate(requestDto.getPassportIssueDate())
@@ -136,21 +195,49 @@ public class DealService {
         var statement = Statement.builder()
             .statusHistory(new ArrayList<>())
             .client(savedClient)
-            .sesCode(100)
             .creationDate(Instant.now())
             .build();
 
         var statementEntity = statementRepository.save(statement);
         statementEntity.getStatusHistory().add(StatusHistory.builder()
             .changeType(ChangeType.AUTOMATIC)
-            .status("Выдан список с предварительными условиями кредита")
+            .status("List with loan offer was issued")
             .time(Instant.now())
             .build());
 
         return statementEntity;
     }
 
-    private void changeStatusAndHistory(Statement statement, StatementStatus status, String statusInfo) {
+    private EmailMessage buildMessage(Client client, Statement statement, Theme theme, int sesCode) {
+        return EmailMessage.builder()
+            .address(client.getEmail())
+            .theme(theme)
+            .statementId(statement.getId())
+            .sesCode(sesCode)
+            .build();
+    }
+
+    private EmailMessage buildMessage(Client client, Statement statement, Theme theme) {
+        return EmailMessage.builder()
+            .address(client.getEmail())
+            .theme(theme)
+            .statementId(statement.getId())
+            .build();
+    }
+
+    private void updateEmployment(FinishRegistrationRequestDto requestDto, Client client, Passport passport) {
+        var employment = employmentMapper.toEntity(requestDto.getEmploymentDto());
+        employment.setId(UUID.randomUUID());
+
+        client.setGender(requestDto.getGender());
+        client.setAccountNumber(requestDto.getAccountNumber());
+        client.setMaritalStatus(requestDto.getMaritalStatus());
+        client.setDependentAmount(requestDto.getDependentAmount());
+        client.setEmployment(employment);
+        client.setPassport(passport);
+    }
+
+    private void updateStatusAndHistory(Statement statement, StatementStatus status, String statusInfo) {
         statement.setStatus(status);
         statement.getStatusHistory().add(StatusHistory.builder()
             .changeType(ChangeType.AUTOMATIC)

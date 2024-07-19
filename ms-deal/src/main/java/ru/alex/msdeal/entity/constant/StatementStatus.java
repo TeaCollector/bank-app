@@ -7,7 +7,7 @@ public enum StatementStatus {
     CC_APPROVED("Выдача кредита одобрена"),
     PREPARE_DOCUMENTS("Подготовка документов"),
     DOCUMENT_CREATED("Создание документов"),
-    CLIENT_DENIED("Отказ клиенту"),
+    CLIENT_DENIED("Отказ клиента"),
     DOCUMENT_SIGNED("Документы подписаны"),
     CREDIT_ISSUED("Кредит выдан");
 

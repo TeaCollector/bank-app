@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -16,6 +15,5 @@ public class MessageError {
 
     public MessageError(final String message) {
         this.message = message;
-        this.errors = new HashMap<>();
     }
 }

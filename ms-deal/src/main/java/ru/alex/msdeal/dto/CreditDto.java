@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 public class CreditDto {
 
     private BigDecimal amount;
