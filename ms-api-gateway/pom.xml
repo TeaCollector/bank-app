@@ -9,26 +9,26 @@
         <relativePath/>
     </parent>
     <groupId>ru.alex</groupId>
-    <artifactId>ms-statement</artifactId>
-    <version>1.0</version>
-    <name>ms-statement</name>
-    <description>ms-statement</description>
-
+    <artifactId>ms-api-gateway</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>ms-api-gateway</name>
+    <description>ms-api-gateway</description>
     <properties>
         <java.version>17</java.version>
         <openfeign.version>3.1.8</openfeign.version>
+        <springdoc.version>1.8.0</springdoc.version>
     </properties>
-
     <dependencies>
-
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -39,27 +39,16 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.8.0</version>
+            <version>${springdoc.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-
     </dependencies>
+
     <build>
         <plugins>
             <plugin>

@@ -9,7 +9,7 @@ import ru.alex.msdeal.entity.Client;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-07-09T08:58:37+0500",
+    date = "2024-07-19T15:37:53+0500",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.10 (Oracle Corporation)"
 )
 @Component

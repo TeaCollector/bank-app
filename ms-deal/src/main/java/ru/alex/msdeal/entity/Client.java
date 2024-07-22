@@ -12,7 +12,6 @@ import ru.alex.msdeal.entity.constant.Gender;
 import ru.alex.msdeal.entity.constant.MaritalStatus;
 
 
-@EqualsAndHashCode
 @Getter
 @Setter
 @Builder(toBuilder = true)
