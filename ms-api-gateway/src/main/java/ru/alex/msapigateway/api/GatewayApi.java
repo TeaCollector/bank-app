@@ -1,4 +1,4 @@
-package ru.alex.msdeal.api;
+package ru.alex.msapigateway.api;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -12,14 +12,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.alex.msdeal.dto.*;
+import ru.alex.msapigateway.dto.*;
 
 
-@Tag(name = "Deal controller", description = "For save and send all purpose")
-@RequestMapping("deal")
-public interface DealApi {
+@Tag(name = "Api gateway controller", description = "For resending all request")
+@RequestMapping
+public interface GatewayApi {
 
-    @Operation(summary = "Receive and save offer for loan")
+
+    @Operation(summary = "Calculate loan offer by loan request")
     @ApiResponses(value =
     @ApiResponse(
         responseCode = "200",
@@ -32,20 +33,16 @@ public interface DealApi {
         })
     )
     @PostMapping("statement")
-    ResponseEntity<List<LoanOfferDto>> createOffer(@RequestBody LoanStatementRequestDto loanStatementRequestDto);
+    ResponseEntity<List<LoanOfferDto>> statement(@Valid @RequestBody LoanStatementRequestDto loanStatementRequestDto);
 
-
-    @Operation(summary = "Choose purpose")
+    @Operation(summary = "Select loan offer")
     @ApiResponses(value =
     @ApiResponse(
         responseCode = "200",
-        description = "Void",
-        content = { @Content(
-            mediaType = "application/json")
-        })
+        description = "Success")
     )
-    @PostMapping("offer/select")
-    ResponseEntity<Void> offerSelect(@Valid @RequestBody LoanOfferDto loanOfferDto);
+    @PostMapping("statement/offer")
+    ResponseEntity<Void> selectOffer(@Valid @RequestBody LoanOfferDto scoringDataDto);
 
     @Operation(summary = "Finish registration and calculate full credit purpose")
     @ApiResponses(value =
@@ -56,20 +53,20 @@ public interface DealApi {
             mediaType = "application/json")
         })
     )
-    @PostMapping("calculate/{statementId}")
+    @PostMapping("deal/calculate/{statementId}")
     ResponseEntity<Void> calculate(@Valid @RequestBody FinishRegistrationRequestDto finishRegistrationRequestDto,
                                    @Parameter(name = "statementId") @PathVariable String statementId);
 
-    @Operation(summary = "Request for sending documents")
+    @Operation(summary = "Sending documents")
     @ApiResponses(value =
     @ApiResponse(
         responseCode = "200",
         description = "Void")
     )
-    @PostMapping("document/{statementId}/send")
+    @PostMapping("deal/document/{statementId}/send")
     ResponseEntity<Void> sendDocument(@Parameter(name = "statementId") @PathVariable String statementId);
 
-    @Operation(summary = "Request for sign documents")
+    @Operation(summary = "Sign documents")
     @ApiResponses(value =
     @ApiResponse(
         responseCode = "200",
@@ -78,7 +75,7 @@ public interface DealApi {
             mediaType = "application/json")
         })
     )
-    @PostMapping("document/{statementId}/sign")
+    @PostMapping("deal/document/{statementId}/sign")
     ResponseEntity<Void> signDocument(@Parameter(name = "statementId") @PathVariable String statementId);
 
     @Operation(summary = "Code for sign documents")
@@ -90,11 +87,11 @@ public interface DealApi {
             mediaType = "application/json")
         })
     )
-    @PostMapping("document/{statementId}/code")
+    @PostMapping("deal/document/{statementId}/code")
     ResponseEntity<Void> codeSign(@Valid @RequestBody SesCodeDto sesCode,
                                   @Parameter(name = "statementId") @PathVariable String statementId);
 
-    @Operation(summary = "Get statement")
+    @Operation(summary = "[Admin]Get statement")
     @ApiResponses(value =
     @ApiResponse(
         responseCode = "200",
@@ -103,10 +100,10 @@ public interface DealApi {
             mediaType = "application/json")
         })
     )
-    @GetMapping("admin/statement/{statementId}")
+    @GetMapping("deal/admin/statement/{statementId}")
     ResponseEntity<StatementDto> getStatement(@Parameter(name = "statementId") @PathVariable String statementId);
 
-    @Operation(summary = "Get all statements")
+    @Operation(summary = "[Admin]Get all statements")
     @ApiResponses(value =
     @ApiResponse(
         responseCode = "200",
@@ -115,6 +112,6 @@ public interface DealApi {
             mediaType = "application/json")
         })
     )
-    @GetMapping("admin/statements")
+    @GetMapping("deal/admin/statements")
     ResponseEntity<List<StatementDto>> getAllStatements();
 }

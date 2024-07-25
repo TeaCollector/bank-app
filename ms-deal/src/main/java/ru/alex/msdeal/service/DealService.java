@@ -18,10 +18,7 @@ import ru.alex.msdeal.exception.ClientDeniedException;
 import ru.alex.msdeal.exception.SesCodeNotEqualsException;
 import ru.alex.msdeal.exception.StatementNotFoundException;
 import ru.alex.msdeal.exception.StatementNotPreApprovedException;
-import ru.alex.msdeal.mapper.ClientMapper;
-import ru.alex.msdeal.mapper.CreditMapper;
-import ru.alex.msdeal.mapper.EmploymentMapper;
-import ru.alex.msdeal.mapper.PassportMapper;
+import ru.alex.msdeal.mapper.*;
 import ru.alex.msdeal.repository.ClientRepository;
 import ru.alex.msdeal.repository.CreditRepository;
 import ru.alex.msdeal.repository.StatementRepository;
@@ -43,6 +40,7 @@ public class DealService {
     private final ClientMapper clientMapper;
     private final PassportMapper passportMapper;
     private final CreditMapper creditMapper;
+    private final StatementMapper statementMapper;
 
     private final EmailSender emailSender;
 
@@ -169,6 +167,13 @@ public class DealService {
         updateStatusAndHistory(statement, StatementStatus.CREDIT_ISSUED, "Loan was taken, all fine");
     }
 
+    public StatementDto getStatementById(String statementId) {
+        log.info("User trying to get statement by id: {}", statementId);
+        var statement = statementRepository.findById(UUID.fromString(statementId))
+            .orElseThrow(() -> new StatementNotFoundException("Statement №" + statementId + " not found"));
+
+        return statementMapper.toDto(statement);
+    }
 
     private Statement getStatement(String statementId) {
         return statementRepository.findById(UUID.fromString(statementId))
@@ -279,5 +284,11 @@ public class DealService {
             .middleName(client.getMiddleName())
             .birthdate(client.getBirthdate())
             .build();
+    }
+
+    public List<StatementDto> getAllStatements() {
+        var statements = statementRepository.findAll();
+
+        return statementMapper.toDtoList(statements);
     }
 }

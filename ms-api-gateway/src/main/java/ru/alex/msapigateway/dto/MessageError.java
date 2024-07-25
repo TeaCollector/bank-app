@@ -1,0 +1,19 @@
+package ru.alex.msapigateway.dto;
+
+import java.util.Map;
+import lombok.*;
+
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class MessageError {
+    private String message;
+    private Map<String, String> errors;
+
+    public MessageError(final String message) {
+        this.message = message;
+    }
+}
