@@ -5,11 +5,12 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import ru.alex.msapigateway.config.OpenFeignConfiguration;
 import ru.alex.msapigateway.dto.LoanOfferDto;
 import ru.alex.msapigateway.dto.LoanStatementRequestDto;
 
 
-@FeignClient(value = "statementFeignClient", url = "http://localhost:8083/statement")
+@FeignClient(value = "statementFeignClient", url = OpenFeignConfiguration.STATEMENT_FEIGN_URL)
 public interface StatementFeignService {
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")

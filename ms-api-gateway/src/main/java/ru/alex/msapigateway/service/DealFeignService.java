@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import ru.alex.msapigateway.config.OpenFeignConfiguration;
 import ru.alex.msapigateway.dto.*;
 
 
-@FeignClient(value = "apiGatewayFeignClient", url = "http://localhost:8082/deal")
+@FeignClient(value = "apiGatewayFeignClient", url = OpenFeignConfiguration.DEAL_FEIGN_URL)
 public interface DealFeignService {
 
     @RequestMapping(method = RequestMethod.POST, value = "calculate/{statementId}", consumes = "application/json")

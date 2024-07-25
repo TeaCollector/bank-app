@@ -1,8 +1,0 @@
-package ru.alex.msapigateway;
-
-import org.springframework.context.annotation.Configuration;
-
-
-@Configuration
-public class ApiGatewayConfig {
-}
